@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2E47D6">
+<title>Ruta B1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one-column app, units as stations on a vertical line toward B1; lessons are full-screen exercise cards */
+:root{
+  --bg:#F3F5FB; --surface:#FFFFFF; --sunk:#E6EAF5; --ink:#161C38; --muted:#5A6283; --line:#D3D9EA;
+  --accent:#2E47D6; --accent-deep:#1E31A3; --accent-soft:#E2E7FF; --accent-ink:#FFFFFF;
+  --warm:#E99200; --warm-soft:#FFF0D2;
+  --good:#18895E; --good-soft:#DCF4E8; --bad:#C93A3A; --bad-soft:#FBE2E2; --heart:#DE3D5B;
+  --f-display:'Bricolage Grotesque','Avenir Next','Segoe UI',system-ui,sans-serif;
+  --f-body:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1328; --surface:#181E3B; --sunk:#222A50; --ink:#ECEFFC; --muted:#99A2C8; --line:#2C3462;
+  --accent:#7A8CFF; --accent-deep:#4656CC; --accent-soft:#252E6B; --accent-ink:#0F1328;
+  --warm:#FFB52E; --warm-soft:#3A2E12;
+  --good:#3CCB8F; --good-soft:#143A2C; --bad:#FF7070; --bad-soft:#401D24; --heart:#FF5C7A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1328; --surface:#181E3B; --sunk:#222A50; --ink:#ECEFFC; --muted:#99A2C8; --line:#2C3462;
+  --accent:#7A8CFF; --accent-deep:#4656CC; --accent-soft:#252E6B; --accent-ink:#0F1328;
+  --warm:#FFB52E; --warm-soft:#3A2E12;
+  --good:#3CCB8F; --good-soft:#143A2C; --bad:#FF7070; --bad-soft:#401D24; --heart:#FF5C7A; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+svg.i{width:20px;height:20px;flex:none}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:-.02em}
+.brand b{color:var(--accent)}
+.stats{display:flex;gap:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat{display:flex;align-items:center;gap:4px}
+.stat.fire{color:var(--warm)} .stat.xp{color:var(--accent)} .stat.hp{color:var(--heart)}
+.stat.off{color:var(--muted)}
+
+main{padding-block:18px 110px}
+
+/* goal card */
+.goal{display:flex;gap:16px;align-items:center;background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:16px;margin-bottom:28px}
+.ring{width:64px;height:64px;flex:none}
+.goal h3{font-size:18px;margin-bottom:2px}
+.goal p{margin:0;color:var(--muted);font-size:14px}
+
+/* units & track */
+.unit{margin-bottom:30px}
+.unit-head{background:var(--accent);color:var(--accent-ink);border-radius:20px;padding:16px 18px;box-shadow:0 5px 0 var(--accent-deep)}
+.unit-head .eyebrow{color:inherit;opacity:.8}
+.unit-head h2{font-size:22px;margin:4px 0 6px}
+.unit-head p{margin:0;font-size:14px;opacity:.9}
+.unit.locked .unit-head{background:var(--sunk);color:var(--muted);box-shadow:0 5px 0 var(--line)}
+.unit.complete .unit-head{background:var(--good);box-shadow:0 5px 0 color-mix(in srgb,var(--good) 70%,#000)}
+.track{list-style:none;margin:18px 0 0;padding:0 0 0 58px;position:relative;display:grid;gap:14px}
+.track::before{content:"";position:absolute;left:25px;top:6px;bottom:6px;width:6px;border-radius:3px;background:var(--line)}
+.stop{position:relative;display:flex;align-items:center;gap:12px;min-height:52px}
+.node{position:absolute;left:-52px;top:50%;translate:0 -50%;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--sunk);color:var(--muted);border:4px solid var(--bg)}
+.stop.done .node{background:var(--accent);color:var(--accent-ink)}
+.stop.current .node{background:var(--warm);color:#1d1400;box-shadow:0 0 0 0 var(--warm);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--warm) 60%,transparent)}100%{box-shadow:0 0 0 14px transparent}}
+.stop-txt{flex:1;min-width:0}
+.stop-txt strong{display:block;font-size:16px}
+.stop-txt span{font-size:13px;color:var(--muted)}
+.stop.locked .stop-txt{opacity:.55}
+.mini{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:7px 12px;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.05em;box-shadow:0 3px 0 var(--line)}
+.mini.go{background:var(--warm);border-color:var(--warm);color:#1d1400;box-shadow:0 3px 0 color-mix(in srgb,var(--warm) 65%,#000)}
+.mini:disabled{opacity:.45;cursor:not-allowed}
+.finish{display:flex;align-items:center;gap:12px;padding:18px;border:2px dashed var(--line);border-radius:20px;color:var(--muted);font-weight:700}
+
+/* buttons */
+.btn{display:block;width:100%;border:0;border-radius:16px;padding:15px 18px;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:15px;letter-spacing:.07em;text-transform:uppercase;box-shadow:0 4px 0 var(--accent-deep);transition:transform .06s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--accent-deep)}
+.btn:disabled{background:var(--sunk);color:var(--muted);box-shadow:0 4px 0 var(--line);cursor:not-allowed}
+.btn.ghost{background:var(--surface);color:var(--accent);border:2px solid var(--line);box-shadow:0 4px 0 var(--line)}
+.btn.good{background:var(--good);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--good) 65%,#000)}
+.btn.bad{background:var(--bad);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--bad) 65%,#000)}
+
+/* tabs */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:2px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-block:8px}
+.tab{border:2px solid transparent;background:none;border-radius:14px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.tab[aria-current="true"]{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.tab svg.i{width:24px;height:24px}
+
+/* cards in review / profile */
+.card{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;margin-bottom:16px}
+.card h2{font-size:20px;margin-bottom:6px}
+.card p{margin:0 0 14px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:14px;display:flex;gap:10px;align-items:center}
+.kpi b{display:block;font-family:var(--f-display);font-size:24px;font-variant-numeric:tabular-nums;line-height:1}
+.kpi span{font-size:13px;color:var(--muted)}
+.bars{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:130px;margin-top:6px}
+.bar{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar i{display:block;width:100%;border-radius:8px 8px 4px 4px;background:var(--accent);min-height:4px}
+.bar.met i{background:var(--warm)}
+.bar.today span{color:var(--ink);font-weight:800}
+.meter{height:14px;background:var(--sunk);border-radius:7px;overflow:hidden;margin:4px 0 8px}
+.meter i{display:block;height:100%;background:var(--good);border-radius:7px}
+details.rule{border-top:2px solid var(--line);padding:12px 0}
+details.rule:first-of-type{border-top:0}
+details.rule summary{font-weight:700;cursor:pointer}
+details.rule div{color:var(--muted);margin-top:8px;font-size:15px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-top:2px solid var(--line)}
+.row:first-of-type{border-top:0}
+select{font:inherit;padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:var(--surface);color:var(--ink)}
+
+/* lesson overlay */
+#lesson{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+#lesson[hidden]{display:none!important}
+.l-head{display:flex;align-items:center;gap:14px;padding-block:14px}
+.x{border:0;background:none;color:var(--muted);padding:4px;display:grid}
+.x svg.i{width:26px;height:26px}
+.prog{flex:1;height:16px;border-radius:8px;background:var(--sunk);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--good);border-radius:8px;transition:width .35s ease}
+.l-body{flex:1;overflow-y:auto}
+.l-body .wrap{padding-block:8px 24px}
+.kind{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.kind.again{color:var(--warm)}
+.q{font-family:var(--f-display);font-size:24px;font-weight:800;margin:0 0 20px;text-wrap:balance}
+.es{font-size:20px;font-weight:600;background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:20px}
+.sent{font-size:22px;font-weight:600;line-height:1.6;margin-bottom:24px}
+.slot{display:inline-block;min-width:90px;border-bottom:3px solid var(--accent);color:var(--accent);text-align:center;padding:0 6px}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:14px 16px;font-size:17px;font-weight:600;box-shadow:0 3px 0 var(--line)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 3px 0 var(--accent)}
+.answer-line{min-height:120px;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding-bottom:12px;margin-bottom:22px;background-image:linear-gradient(var(--line),var(--line));background-size:100% 2px;background-position:0 58px;background-repeat:no-repeat}
+.bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.tile{background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:9px 13px;font-size:17px;font-weight:600;box-shadow:0 3px 0 var(--line)}
+.tile.used{visibility:hidden}
+textarea{width:100%;min-height:120px;font:inherit;font-size:18px;padding:14px;border-radius:16px;border:2px solid var(--line);background:var(--surface);color:var(--ink);resize:vertical}
+.speak{display:flex;gap:12px;justify-content:center;margin-bottom:26px}
+.spk{width:96px;height:96px;border-radius:24px;border:0;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 5px 0 var(--accent-deep)}
+.spk.slow{width:64px;height:64px;align-self:end;border-radius:18px;background:var(--accent-soft);color:var(--accent);box-shadow:0 4px 0 var(--line)}
+.spk svg.i{width:40px;height:40px}.spk.slow svg.i{width:26px;height:26px}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:grid;gap:10px;align-content:start;min-width:0}
+.mt{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:12px;font-weight:600;font-size:15px;box-shadow:0 3px 0 var(--line);min-height:56px}
+.mt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.mt.ok{opacity:.35;cursor:default;border-color:var(--good)}
+.mt.no{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.l-foot{border-top:2px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--bg)}
+.l-foot .wrap{padding-block:16px}
+.l-foot.good{background:var(--good-soft);border-color:transparent}
+.l-foot.bad{background:var(--bad-soft);border-color:transparent}
+.fb{display:none;margin-bottom:14px}
+.l-foot.good .fb,.l-foot.bad .fb{display:block}
+.fb h3{font-size:22px;display:flex;align-items:center;gap:8px}
+.l-foot.good .fb h3{color:var(--good)} .l-foot.bad .fb h3{color:var(--bad)}
+.fb .ans{font-weight:700;margin:6px 0 4px;display:flex;align-items:center;gap:8px}
+.fb .ans button{border:0;background:none;color:inherit;padding:2px;display:grid}
+.fb .tip{font-size:15px;color:var(--ink);opacity:.85}
+
+/* result & dialogs */
+.result{text-align:center;padding-block:40px 20px}
+.result h1{font-size:34px;margin:16px 0 8px}
+.result p{color:var(--muted);margin:0 0 26px}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px}
+.trio div{border:2px solid var(--line);border-radius:16px;padding:12px 6px;background:var(--surface)}
+.trio b{display:block;font-family:var(--f-display);font-size:26px;font-variant-numeric:tabular-nums}
+.trio span{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.badge{width:110px;height:110px;margin:0 auto;border-radius:32px;display:grid;place-items:center;background:var(--warm-soft);color:var(--warm)}
+.badge svg.i{width:60px;height:60px}
+.badge.sad{background:var(--bad-soft);color:var(--heart)}
+#dlg{position:fixed;inset:0;z-index:40;background:color-mix(in srgb,var(--ink) 45%,transparent);display:flex;align-items:flex-end;justify-content:center}
+#dlg .box{background:var(--surface);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:24px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));display:grid;gap:12px}
+#dlg h3{font-size:22px} #dlg p{margin:0;color:var(--muted)}
+.field{display:grid;gap:6px;margin-bottom:12px}
+.field label{font-size:13px;font-weight:700;color:var(--muted)}
+.field input{font:inherit;font-size:16px;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.auth-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.sync{font-size:14px;color:var(--muted);margin:0 0 14px}
+.sync.err{color:var(--bad)}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<header class="top"><div class="wrap">
+  <div class="brand">Ruta <b>B1</b></div>
+  <div class="stats" id="stats"></div>
+</div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Secciones"><div class="wrap">
+  <button class="tab" data-tab="ruta"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="6" cy="5" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.5 5H15a3.5 3.5 0 0 1 0 7H9a3.5 3.5 0 0 0 0 7h6.5"/></svg>Ruta</button>
+  <button class="tab" data-tab="repaso"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Repaso</button>
+  <button class="tab" data-tab="progreso"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>Progreso</button>
+</div></nav>
+
+<section id="lesson" hidden>
+  <div class="wrap l-head">
+    <button class="x" id="quit" aria-label="Salir de la lección"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="prog"><i id="bar"></i></div>
+    <div class="stat hp" id="lhp"></div>
+  </div>
+  <div class="l-body"><div class="wrap" id="ex"></div></div>
+  <div class="l-foot" id="foot"><div class="wrap">
+    <div class="fb" id="fb"></div>
+    <button class="btn" id="go" disabled>Comprobar</button>
+  </div></div>
+</section>
+<div id="dlg" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+<script>
+/* ---------- icons ---------- */
+const I={
+ fire:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3.5 5.5 6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.4 1.2-4 2.4-5.2.2 1.7 1 2.7 2.1 3.2C10.6 8.5 11 5 12 2z"/></svg>',
+ bolt:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 2 4 14h7l-1.5 8L19 10h-7z"/></svg>',
+ heart:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-8-4.9-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 6.1-8 11-8 11z"/></svg>',
+ check:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+ lock:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+ star:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>',
+ play:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+ speaker:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>',
+ turtle:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 15a8 6 0 0 1 16 0z" fill="currentColor" fill-opacity=".25"/><path d="M20 15h2M6 15l-1 3M18 15l1 3M20 12a2 2 0 1 1 2-2"/></svg>',
+ flag:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>',
+ x:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+};
+
+/* ---------- content ---------- */
+const G=(s,o,tip)=>({t:'gap',s,o,tip});            // o[0] es la correcta
+const M=(q,o,tip)=>({t:'mc',q,o,tip});              // o[0] es la correcta
+const O=(es,en,extra,tip)=>({t:'order',es,en,extra,tip});
+const W=(es,ans,tip)=>({t:'write',es,ans,tip});
+const H=(en,es,extra)=>({t:'listen',en,es,extra});
+const P=pairs=>({t:'match',pairs});
+
+const UNITS=[
+{title:"Experiencias de vida",can:"Hablar de lo que has hecho alguna vez y de lo que pasó en un momento concreto.",
+ key:"<b>Present perfect</b> (have + participio) para experiencias sin fecha y acciones que siguen: <i>I have been to London</i>. <b>Past simple</b> con momento terminado: <i>yesterday, last year, in 2019</i>. <b>for</b> + duración, <b>since</b> + punto de inicio.",
+ items:[
+ G("I ___ to London twice in my life.",["have been","went","was"],"Experiencia sin momento concreto: present perfect."),
+ G("We ___ that film last night.",["saw","have seen","see"],"\"Last night\" es un momento terminado: past simple."),
+ G("She ___ here since 2019.",["has worked","worked","works"],"Con since/for y una acción que continúa se usa present perfect."),
+ G("Have you ever ___ paella?",["eaten","ate","eat"],"Detrás de have va el participio: eat → ate → eaten."),
+ G("How long ___ you known him?",["have","did","do"],"How long + present perfect para algo que dura hasta hoy."),
+ M("¿Cuál es correcta?",["I finished my homework yesterday.","I have finished my homework yesterday.","I have finish my homework yesterday."],"Con yesterday nunca present perfect."),
+ O("Nunca he estado en Nueva York.","I have never been to New York",["was","ever"],"never va entre have y el participio."),
+ O("¿Ya has terminado el informe?","Have you finished the report yet",["did","already"],"yet va al final en preguntas y negativas."),
+ P([["already","ya"],["yet","todavía / aún"],["ever","alguna vez"],["since","desde"],["just","acabar de"]]),
+ W("Ella acaba de llegar.",["she has just arrived","she's just arrived","she just arrived"],"acabar de = have just + participio."),
+ H("I have lived here for ten years","He vivido aquí durante diez años.",["since","live"])
+ ]},
+{title:"Recuerdos del pasado",can:"Contar historias, describir lo que estaba pasando y hablar de costumbres antiguas.",
+ key:"<b>Past continuous</b> (was/were + -ing) para la acción en curso: <i>I was having a shower when…</i>. <b>used to</b> para costumbres pasadas; con did se escribe <b>use to</b>: <i>Did you use to…?</i>",
+ items:[
+ G("I ___ a shower when the phone rang.",["was having","had","have had"],"La acción larga en curso va en past continuous; la que interrumpe, en past simple."),
+ G("When I was a child, I ___ play football every day.",["used to","use to","was used to"],"Costumbre pasada: used to + infinitivo."),
+ G("Did you ___ live in Madrid?",["use to","used to","using to"],"Con did, el verbo vuelve a la forma base: use to."),
+ G("While they ___ dinner, the lights went out.",["were having","had","have"],"While suele ir con past continuous."),
+ G("What ___ you doing at eight o'clock last night?",["were","did","was"],"you → were."),
+ M("¿Cuál es correcta?",["I didn't use to like coffee.","I didn't used to like coffee.","I not used to like coffee."],"Negativa con didn't + use to."),
+ O("Estaba lloviendo cuando salimos.","It was raining when we left",["rained","leave"],"was raining (fondo) + left (acción puntual)."),
+ W("Yo solía vivir en Valencia.",["i used to live in valencia"],"soler (en pasado) = used to."),
+ P([["go","went"],["buy","bought"],["think","thought"],["catch","caught"],["teach","taught"]]),
+ H("We were watching TV when he arrived","Estábamos viendo la tele cuando llegó.",["watched","arrive"])
+ ]},
+{title:"Planes y predicciones",can:"Hablar de planes, citas, predicciones y decisiones sobre el futuro.",
+ key:"<b>going to</b>: plan decidido o predicción con evidencia. <b>will</b>: decisión del momento, promesas, opiniones (<i>I think…</i>). <b>Present continuous</b>: citas ya organizadas. <b>Present simple</b>: horarios. Tras <b>when / if</b> no se usa will.",
+ items:[
+ G("Look at those clouds! It ___ rain.",["is going to","will","is raining"],"Predicción con evidencia visible: going to."),
+ G("\"I'm so tired.\" \"Don't worry, I ___ cook tonight.\"",["will","am going to","cook"],"Decisión tomada en el momento: will."),
+ G("We ___ our grandparents on Saturday. It's all arranged.",["are visiting","will visit","visit"],"Cita organizada: present continuous."),
+ G("The train ___ at 7:45 tomorrow morning.",["leaves","will leaving","is leave"],"Horarios oficiales: present simple."),
+ G("I'll phone you when I ___ to the hotel.",["get","will get","am going to get"],"Después de when no va will."),
+ M("¿Qué expresa \"I'm going to study medicine\"?",["Un plan o intención ya decidido","Una decisión tomada en ese momento","Un horario oficial"],"going to = intención previa."),
+ O("Creo que ella aprobará el examen.","I think she will pass the exam",["going","passes"],"Opinión sobre el futuro: I think + will."),
+ W("Voy a comprar un coche nuevo.",["i am going to buy a new car","i'm going to buy a new car"],"Ir a + infinitivo = be going to."),
+ P([["appointment","cita (médico, etc.)"],["booking","reserva"],["deadline","fecha límite"],["meeting","reunión"],["schedule","horario / agenda"]]),
+ H("I will call you when I get home","Te llamaré cuando llegue a casa.",["will get","calling"])
+ ]},
+{title:"Si… entonces",can:"Expresar condiciones reales e imaginarias y dar consejos.",
+ key:"<b>Zero</b>: if + presente, presente (verdades). <b>First</b>: if + presente, will (posible). <b>Second</b>: if + pasado, would (imaginario). <i>If I were you, I would…</i> para aconsejar. <b>unless</b> = if not.",
+ items:[
+ G("If it ___ tomorrow, we'll stay at home.",["rains","will rain","rained"],"First conditional: if + presente, will."),
+ G("If I ___ more money, I would travel around the world.",["had","have","would have"],"Second conditional: if + pasado, would."),
+ G("If I were you, I ___ accept that job.",["would","will","am"],"If I were you + would para aconsejar."),
+ G("If you heat ice, it ___.",["melts","would melt","melted"],"Verdad general (zero conditional): presente + presente."),
+ G("Unless you hurry, you ___ miss the bus.",["will","would","are"],"unless = if not, funciona como el first conditional."),
+ M("¿Cuál es correcta?",["If I knew the answer, I would tell you.","If I would know the answer, I would tell you.","If I know the answer, I would tell you."],"Nunca would detrás de if."),
+ O("Si tuviera tiempo, aprendería a tocar la guitarra.","If I had time I would learn to play the guitar",["have","will"],"Situación imaginaria: had + would."),
+ W("Si llueve, no iremos a la playa.",["if it rains we will not go to the beach","if it rains we won't go to the beach","we will not go to the beach if it rains","we won't go to the beach if it rains"],"Condición posible: if + presente, will."),
+ P([["unless","a menos que"],["as long as","siempre que"],["in case","por si acaso"],["otherwise","si no, de lo contrario"],["even if","incluso si"]]),
+ H("If you study hard you will pass","Si estudias mucho, aprobarás.",["studied","would"])
+ ]},
+{title:"Obligaciones y comparaciones",can:"Hablar de normas, consejos, posibilidades y comparar cosas.",
+ key:"<b>must</b> / <b>have to</b>: obligación. <b>mustn't</b>: prohibido. <b>don't have to</b>: no es necesario. <b>should</b>: consejo. <b>might</b>: posibilidad. Comparativos: <i>-er than / more … than</i>, <i>as … as</i>; superlativos: <i>the -est / the most</i>.",
+ items:[
+ G("You ___ smoke in the hospital. It's forbidden.",["mustn't","don't have to","shouldn't to"],"Prohibición: mustn't."),
+ G("Tomorrow is Sunday, so I ___ get up early.",["don't have to","mustn't","haven't"],"No es necesario: don't have to."),
+ G("You look tired. You ___ go to bed earlier.",["should","must to","ought"],"Consejo: should + infinitivo sin to."),
+ G("She isn't answering. She ___ be busy.",["might","must to","can to"],"Posibilidad: might."),
+ G("This hotel is ___ than the one we stayed in last year.",["more comfortable","comfortabler","most comfortable"],"Adjetivos largos: more … than."),
+ G("It's the ___ film I've ever seen.",["worst","baddest","worse"],"bad → worse → the worst."),
+ M("¿Qué significa \"You don't have to come\"?",["No es necesario que vengas","No debes venir","No puedes venir"],"don't have to ≠ mustn't."),
+ O("Mi hermano no es tan alto como yo.","My brother is not as tall as me",["than","so"],"tan … como = as … as."),
+ W("Deberías hablar con tu jefe.",["you should talk to your boss","you should speak to your boss","you should talk with your boss","you should speak with your boss"],"deberías = should."),
+ H("You should see a doctor","Deberías ir al médico.",["must","seeing"])
+ ]},
+{title:"Phrasal verbs del día a día",can:"Entender y usar los phrasal verbs más frecuentes en conversaciones normales.",
+ key:"Un phrasal verb es verbo + partícula con un significado nuevo: <i>look after</i> (cuidar), <i>run out of</i> (quedarse sin), <i>put off</i> (posponer). <b>look forward to</b> va seguido de <b>-ing</b>.",
+ items:[
+ P([["give up","dejar de, rendirse"],["look for","buscar"],["turn down","rechazar"],["find out","averiguar"],["get on with","llevarse bien con"]]),
+ P([["pick up","recoger"],["run out of","quedarse sin"],["put off","posponer"],["look after","cuidar"],["set off","salir de viaje"]]),
+ G("I've ___ up sugar and I feel much better.",["given","gave","put"],"give up = dejar un hábito. Participio: given."),
+ G("We've run ___ of milk. Can you buy some?",["out","off","away"],"run out of = quedarse sin."),
+ G("Could you look ___ my cat while I'm on holiday?",["after","for","at"],"look after = cuidar."),
+ G("The meeting has been put ___ until next week.",["off","out","on"],"put off = aplazar."),
+ M("I'm looking forward to ___ you.",["seeing","see","saw"],"look forward to + -ing."),
+ O("Tengo que averiguar a qué hora sale el tren.","I have to find out what time the train leaves",["discover","leave"],"En preguntas indirectas no se invierte el orden."),
+ W("Ella rechazó la oferta.",["she turned down the offer","she turned the offer down","she rejected the offer","she refused the offer"],"turn down = rechazar."),
+ H("Can you pick me up at the station","¿Puedes recogerme en la estación?",["take","in"])
+ ]},
+{title:"La voz pasiva",can:"Describir procesos, noticias y hechos cuando importa más la acción que quién la hace.",
+ key:"Pasiva = <b>be</b> + participio. El tiempo lo marca <i>be</i>: <i>is spoken, was built, will be published, is being repaired, have been arrested</i>. Quien hace la acción va con <b>by</b>.",
+ items:[
+ G("This bridge ___ in 1890.",["was built","built","has built"],"Pasiva en pasado: was + participio."),
+ G("English ___ all over the world.",["is spoken","speaks","is speaking"],"Pasiva en presente: is + participio."),
+ G("The results ___ next Monday.",["will be published","will publish","are publishing"],"Pasiva en futuro: will be + participio."),
+ G("My car ___ repaired at the moment.",["is being","is been","has being"],"En curso: is being + participio."),
+ G("Three people ___ been arrested.",["have","has","are"],"Sujeto plural: have been."),
+ M("Pasiva de \"Someone stole my wallet\":",["My wallet was stolen.","My wallet stole.","My wallet has stolen."],"was + stolen."),
+ O("La carta fue escrita por mi abuelo.","The letter was written by my grandfather",["wrote","from"],"Agente con by."),
+ W("El museo fue construido en 1990.",["the museum was built in 1990"],"build → built."),
+ P([["write","written"],["speak","spoken"],["build","built"],["steal","stolen"],["choose","chosen"]]),
+ H("The windows are cleaned every week","Las ventanas se limpian cada semana.",["clean","was"])
+ ]},
+{title:"Quién, dónde y qué dijo",can:"Dar detalles con oraciones de relativo y contar lo que otra persona dijo.",
+ key:"Relativos: <b>who</b> (personas), <b>which/that</b> (cosas), <b>where</b> (lugares), <b>whose</b> (posesión). Estilo indirecto: el verbo retrocede un tiempo: <i>\"I am tired\" → She said she was tired</i>; <i>will → would</i>. <b>tell</b> lleva persona; <b>say</b>, no.",
+ items:[
+ G("That's the man ___ helped me yesterday.",["who","which","whose"],"Personas: who."),
+ G("This is the book ___ I told you about.",["that","who","where"],"Cosas: that / which."),
+ G("That's the restaurant ___ we had our first date.",["where","which","who"],"Lugares: where."),
+ G("I have a friend ___ father is a pilot.",["whose","who's","which"],"Posesión: whose."),
+ G("She said that she ___ tired.",["was","is being","were"],"Estilo indirecto: am/is → was."),
+ G("He told me he ___ call me later.",["would","will","wills"],"will → would."),
+ M("\"I live in Paris,\" she said. →",["She said she lived in Paris.","She said me she lived in Paris.","She told she lived in Paris."],"say sin persona; tell con persona."),
+ O("Me preguntó dónde trabajaba.","He asked me where I worked",["did","work"],"En preguntas indirectas no hay did."),
+ W("Ella dijo que estaba cansada.",["she said that she was tired","she said she was tired","she told me she was tired","she told me that she was tired"],"is → was."),
+ H("The woman who lives next door is a doctor","La mujer que vive al lado es médica.",["which","live"])
+ ]}
+];
+const LESSONS=[{name:"Primer contacto",k:6},{name:"Práctica",k:8},{name:"Desafío",k:10}];
+const KINDS={gap:"Completa la frase",mc:"Elige la respuesta",order:"Traduce esta frase",write:"Escribe en inglés",listen:"Escribe lo que oyes",match:"Une las parejas"};
+const MAXH=5, REGEN=20*60*1000, KEY='rutaB1.v1';
+
+/* ---------- nube (Supabase) ----------
+   Pega aquí los datos de tu proyecto: Supabase → Project Settings → API.
+   La anon key es pública por diseño; la seguridad la ponen las políticas RLS de la tabla. */
+const SUPABASE_URL='https://oehkxtmjjqwzhseqzuvg.supabase.co/rest/v1/';
+const SUPABASE_ANON_KEY='sb_publishable_N4RBrPA6VD_qe0cH-aEHdQ_8miEU_YQ';
+
+/* ---------- state ---------- */
+const DEF=()=>({xp:0,streak:0,best:0,last:null,days:{},prog:UNITS.map(()=>0),hearts:MAXH,heartTs:0,mist:[],unlockAll:false,goal:30});
+let S=DEF();
+try{const r=localStorage.getItem(KEY);if(r){S=Object.assign(DEF(),JSON.parse(r));while(S.prog.length<UNITS.length)S.prog.push(0)}}catch(e){}
+function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){S.updated=Date.now();saveLocal();schedulePush()}
+
+/* ---------- sincronización ---------- */
+let sb=null,user=null,syncMsg='',syncErr=false,authMsg='',pushT=null;
+const cloudOn=()=>!!(SUPABASE_URL&&SUPABASE_ANON_KEY&&window.supabase);
+function refreshView(){if(tab==='progreso'&&(!L))render();else renderStats()}
+function merge(l,r){
+  r=Object.assign(DEF(),r);const m=Object.assign({},l);
+  m.xp=Math.max(l.xp,r.xp);
+  m.prog=l.prog.map((p,i)=>Math.max(p,r.prog[i]||0));
+  m.days=Object.assign({},r.days);for(const k in l.days)m.days[k]=Math.max(l.days[k],m.days[k]||0);
+  m.best=Math.max(l.best,r.best);
+  if((r.last||'')>(l.last||'')){m.last=r.last;m.streak=r.streak}
+  else if(r.last===l.last)m.streak=Math.max(l.streak,r.streak);
+  const newer=(r.updated||0)>(l.updated||0)?r:l;
+  m.mist=newer.mist.slice();m.goal=newer.goal;m.unlockAll=newer.unlockAll;
+  m.updated=Math.max(l.updated||0,r.updated||0);
+  return m;
+}
+async function pull(){
+  if(!user)return;
+  syncMsg='Sincronizando…';syncErr=false;refreshView();
+  const{data,error}=await sb.from('progress').select('data').eq('user_id',user.id).maybeSingle();
+  if(error){syncMsg='No se pudo leer tu progreso: '+error.message;syncErr=true;refreshView();return}
+  if(data&&data.data){S=merge(S,data.data);saveLocal()}
+  await push();
+}
+function schedulePush(){if(!user)return;clearTimeout(pushT);pushT=setTimeout(push,1500)}
+async function push(){
+  if(!user)return;
+  const{error}=await sb.from('progress').upsert({user_id:user.id,data:S,updated_at:new Date().toISOString()});
+  if(error){syncMsg='No se pudo guardar en la nube: '+error.message;syncErr=true}
+  else{const d=new Date();syncMsg='Guardado en la nube a las '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');syncErr=false}
+  refreshView();
+}
+function authError(m){
+  if(/Invalid login/i.test(m))return 'Email o contraseña incorrectos.';
+  if(/Email not confirmed/i.test(m))return 'Tienes que confirmar el email antes de entrar. Revisa tu correo.';
+  if(/already registered/i.test(m))return 'Ese email ya tiene cuenta. Usa Entrar.';
+  if(/at least 6/i.test(m))return 'La contraseña necesita al menos 6 caracteres.';
+  return m;
+}
+function initCloud(){
+  if(!cloudOn())return;
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  sb.auth.getSession().then(({data})=>{user=data.session?data.session.user:null;if(user)pull();refreshView()});
+  sb.auth.onAuthStateChange((ev,session)=>{
+    const prev=user;user=session?session.user:null;
+    if(user&&(!prev||prev.id!==user.id))pull();
+    refreshView();
+  });
+  addEventListener('online',()=>{if(user)push()});
+}
+const ymd=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const yest=()=>{const d=new Date();d.setDate(d.getDate()-1);return ymd(d)};
+const liveStreak=()=>(S.last===ymd()||S.last===yest())?S.streak:0;
+function refreshHearts(){
+  if(S.hearts>=MAXH){S.hearts=MAXH;return}
+  const g=Math.floor((Date.now()-S.heartTs)/REGEN);
+  if(g>0){S.hearts=Math.min(MAXH,S.hearts+g);S.heartTs+=g*REGEN;save()}
+}
+function nextHeartIn(){if(S.hearts>=MAXH)return '';const ms=REGEN-(Date.now()-S.heartTs);const m=Math.max(0,Math.floor(ms/60000)),s=Math.max(0,Math.floor(ms%60000/1000));return m+':'+String(s).padStart(2,'0')}
+function loseHeart(){if(S.hearts>=MAXH)S.heartTs=Date.now();S.hearts=Math.max(0,S.hearts-1)}
+const unitOpen=u=>S.unlockAll||u===0||S.prog[u-1]>=3;
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function norm(s){
+  s=s.toLowerCase().replace(/[’‘`]/g,"'");
+  s=s.replace(/\bwon't\b/g,'will not').replace(/\bcan't\b/g,'cannot').replace(/n't\b/g,' not')
+     .replace(/'m\b/g,' am').replace(/'re\b/g,' are').replace(/'ve\b/g,' have').replace(/'ll\b/g,' will').replace(/'d\b/g,' would')
+     .replace(/\bcan not\b/g,'cannot');
+  return s.replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();
+}
+function lev(a,b){const m=a.length,n=b.length;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+let voice=null;
+function pickVoice(){try{const v=speechSynthesis.getVoices();voice=v.find(x=>/en-GB/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}catch(e){}}
+const canSpeak='speechSynthesis' in window;
+if(canSpeak){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}
+function speak(t,rate){if(!canSpeak)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';if(voice)u.voice=voice;u.rate=rate||0.95;speechSynthesis.speak(u)}catch(e){}}
+
+/* ---------- top & tabs ---------- */
+function renderStats(){
+  refreshHearts();
+  const st=liveStreak(), today=S.last===ymd();
+  $('#stats').innerHTML=
+   `<span class="stat ${today?'fire':'off'}" title="Racha de días">${I.fire}${st}</span>`+
+   `<span class="stat xp" title="XP total">${I.bolt}${S.xp}</span>`+
+   `<span class="stat hp" title="Vidas${S.hearts<MAXH?' · siguiente en '+nextHeartIn():''}">${I.heart}${S.hearts}</span>`;
+}
+let tab='ruta';
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0)});
+function render(){
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===tab));
+  renderStats();
+  $('#view').innerHTML=tab==='ruta'?viewPath():tab==='repaso'?viewReview():viewProgress();
+}
+function ring(v,max,size){
+  const r=26,c=2*Math.PI*r,p=Math.min(1,v/max);
+  return `<svg class="ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--sunk)" stroke-width="8"/><circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--warm)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${c*p} ${c}" transform="rotate(-90 32 32)"/><text x="32" y="37" text-anchor="middle" font-size="15" font-weight="800" fill="var(--ink)" font-family="Figtree,sans-serif">${Math.round(p*100)}%</text></svg>`;
+}
+
+/* ---------- views ---------- */
+function viewPath(){
+  const td=S.days[ymd()]||0;
+  const done=S.prog.reduce((a,b)=>a+Math.min(3,b),0);
+  let h=`<div class="goal">${ring(td,S.goal)}<div><h3>${td>=S.goal?'Meta diaria cumplida':'Meta de hoy: '+S.goal+' XP'}</h3><p>${td} XP hoy · ${done} de ${UNITS.length*3} lecciones hacia el B1</p></div></div>`;
+  if(S.hearts===0) h+=`<div class="card"><h2>Te has quedado sin vidas</h2><p>Recuperas una cada 20 minutos (siguiente en ${nextHeartIn()}). Si completas un repaso, ganas una al momento.</p><button class="btn" data-go-tab="repaso">Ir a repaso</button></div>`;
+  UNITS.forEach((U,u)=>{
+    const open=unitOpen(u),p=S.prog[u],complete=p>=3;
+    h+=`<section class="unit ${open?'':'locked'} ${complete?'complete':''}"><div class="unit-head"><span class="eyebrow">Unidad ${u+1} · ${Math.min(p,3)}/3</span><h2>${U.title}</h2><p>${U.can}</p></div><ol class="track">`;
+    LESSONS.forEach((L,n)=>{
+      const state=!open?'locked':n<p?'done':n===p?'current':'locked';
+      const icon=state==='done'?I.check:state==='current'?I.star:I.lock;
+      const btn=state==='locked'?'':`<button class="mini ${state==='current'?'go':''}" data-start="${u},${n}" ${S.hearts===0?'disabled':''}>${state==='current'?'Empezar':'Repetir'}</button>`;
+      h+=`<li class="stop ${state}"><span class="node">${icon}</span><div class="stop-txt"><strong>${L.name}</strong><span>${L.k} ejercicios${n===2?' · incluye escritura':''}</span></div>${btn}</li>`;
+    });
+    h+=`</ol></section>`;
+  });
+  h+=`<div class="finish">${I.flag}<span>Al terminar las 8 unidades habrás repasado la gramática clave del nivel B1 (MCER).</span></div>`;
+  return h;
+}
+function viewReview(){
+  const n=S.mist.length;
+  let h=`<div class="card"><h2>Tus errores</h2><p>${n?`Tienes ${n} ejercicio${n>1?'s':''} pendiente${n>1?'s':''}. Al acertarlos desaparecen de esta lista.`:'No tienes errores pendientes. Una práctica mixta mantiene fresco lo aprendido.'} El repaso no gasta vidas y te da una al terminar.</p>
+  <button class="btn" data-review="${n?'mist':'mix'}">${n?'Repasar errores':'Práctica mixta'}</button></div>`;
+  h+=`<div class="card"><h2>Chuleta de gramática</h2><p>Lo esencial de cada unidad.</p>`;
+  UNITS.forEach((U,u)=>{h+=`<details class="rule" ${unitOpen(u)?'':''}><summary>${u+1}. ${U.title}</summary><div>${U.key}</div></details>`});
+  return h+`</div>`;
+}
+function viewProgress(){
+  const done=S.prog.reduce((a,b)=>a+Math.min(3,b),0),tot=UNITS.length*3;
+  const units=S.prog.filter(p=>p>=3).length;
+  let bars='',max=S.goal;
+  const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d)}
+  days.forEach(d=>max=Math.max(max,S.days[ymd(d)]||0));
+  const wd=['D','L','M','X','J','V','S'];
+  days.forEach((d,i)=>{const v=S.days[ymd(d)]||0;bars+=`<div class="bar ${v>=S.goal?'met':''} ${i===6?'today':''}"><span>${v}</span><i style="height:${Math.max(3,v/max*100)}%"></i><span>${wd[d.getDay()]}</span></div>`});
+  return `<div class="kpis">
+   <div class="kpi" style="color:var(--warm)">${I.fire}<div><b style="color:var(--ink)">${liveStreak()}</b><span>días de racha</span></div></div>
+   <div class="kpi" style="color:var(--accent)">${I.bolt}<div><b style="color:var(--ink)">${S.xp}</b><span>XP total</span></div></div>
+   <div class="kpi" style="color:var(--warm)">${I.star}<div><b style="color:var(--ink)">${S.best}</b><span>mejor racha</span></div></div>
+   <div class="kpi" style="color:var(--good)">${I.check}<div><b style="color:var(--ink)">${units}/${UNITS.length}</b><span>unidades</span></div></div></div>
+  <div class="card"><h2>Camino al B1</h2><div class="meter"><i style="width:${done/tot*100}%"></i></div><p>${done} de ${tot} lecciones completadas (${Math.round(done/tot*100)}%).</p></div>
+  <div class="card"><h2>Últimos 7 días</h2><p>XP por día. En naranja, los días que cumpliste la meta.</p><div class="bars">${bars}</div></div>
+  ${accountCard()}
+  <div class="card"><h2>Ajustes</h2>
+   <div class="row"><label for="goalSel">Meta diaria</label><select id="goalSel">${[20,30,50,80].map(g=>`<option value="${g}" ${g===S.goal?'selected':''}>${g} XP</option>`).join('')}</select></div>
+   <div class="row"><span>Ya tengo base: desbloquear todas las unidades</span><button class="mini" data-act="unlock">${S.unlockAll?'Activado':'Activar'}</button></div>
+   <div class="row"><span>Empezar de cero</span><button class="mini" data-act="reset">Borrar progreso</button></div>
+  </div>`;
+}
+
+function accountCard(){
+  if(!cloudOn())return '';
+  if(user)return `<div class="card"><h2>Tu cuenta</h2><p>Conectado como <b>${esc(user.email||'')}</b>. Tu progreso se sincroniza entre todos tus dispositivos.</p><p class="sync ${syncErr?'err':''}">${esc(syncMsg)}</p><button class="btn ghost" data-act="logout">Cerrar sesión</button></div>`;
+  return `<div class="card"><h2>Guarda tu progreso en la nube</h2><p>Entra con tu cuenta para jugar en el móvil y en el ordenador con la misma partida.</p>
+  <form id="authForm" novalidate>
+   <div class="field"><label for="authEmail">Email</label><input id="authEmail" type="email" autocomplete="email" required></div>
+   <div class="field"><label for="authPw">Contraseña</label><input id="authPw" type="password" autocomplete="current-password" minlength="6" required></div>
+   <p class="sync ${authMsg&&!/Revisa/.test(authMsg)?'err':''}" id="authMsg">${esc(authMsg)}</p>
+   <div class="auth-btns"><button class="btn" type="submit" data-mode="in">Entrar</button><button class="btn ghost" type="submit" data-mode="up">Crear cuenta</button></div>
+  </form></div>`;
+}
+document.addEventListener('submit',async e=>{
+  if(e.target.id!=='authForm')return;
+  e.preventDefault();
+  const mode=(e.submitter&&e.submitter.dataset.mode)||'in';
+  const email=$('#authEmail').value.trim(),password=$('#authPw').value;
+  const msg=t=>{authMsg=t;const el=$('#authMsg');if(el){el.textContent=t;el.className='sync'+(t&&!/Revisa|Entrando|Creando/.test(t)?' err':'')}};
+  if(!email||password.length<6)return msg('Escribe tu email y una contraseña de al menos 6 caracteres.');
+  msg(mode==='up'?'Creando la cuenta…':'Entrando…');
+  const r=mode==='up'?await sb.auth.signUp({email,password}):await sb.auth.signInWithPassword({email,password});
+  if(r.error)return msg(authError(r.error.message));
+  if(mode==='up'&&!r.data.session)return msg('Cuenta creada. Revisa tu correo para confirmarla y después pulsa Entrar.');
+  authMsg='';
+});
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-start],[data-review],[data-act],[data-go-tab]');if(!t)return;
+  if(t.dataset.start){const[u,n]=t.dataset.start.split(',').map(Number);startLesson(u,n)}
+  else if(t.dataset.review)startReview(t.dataset.review);
+  else if(t.dataset.goTab){tab=t.dataset.goTab;render()}
+  else if(t.dataset.act==='logout'){sb.auth.signOut();user=null;syncMsg='';render()}
+  else if(t.dataset.act==='unlock'){S.unlockAll=!S.unlockAll;save();render()}
+  else if(t.dataset.act==='reset')confirmDlg('¿Borrar todo tu progreso?','Perderás XP, racha y lecciones completadas. No se puede deshacer.','Borrar',()=>{S=DEF();save();render()});
+});
+document.addEventListener('change',e=>{if(e.target.id==='goalSel'){S.goal=+e.target.value;save();render()}});
+
+function confirmDlg(title,text,ok,fn,cancel){
+  const d=$('#dlg');d.innerHTML=`<div class="box" role="dialog" aria-modal="true"><h3>${title}</h3><p>${text}</p><button class="btn bad" id="dOk">${ok}</button><button class="btn ghost" id="dNo">${cancel||'Cancelar'}</button></div>`;
+  d.hidden=false;$('#dOk').onclick=()=>{d.hidden=true;fn()};$('#dNo').onclick=()=>d.hidden=true;
+}
+
+/* ---------- lesson engine ---------- */
+let L=null;
+function startLesson(u,n){
+  refreshHearts();if(S.hearts===0){render();return}
+  const pool=shuffle(UNITS[u].items.map((_,i)=>({u,i})));
+  let pick=pool.slice(0,LESSONS[n].k);
+  if(n===2&&!pick.some(r=>UNITS[r.u].items[r.i].t==='write')){const w=pool.find(r=>UNITS[r.u].items[r.i].t==='write');if(w)pick[0]=w}
+  begin(pick,{mode:'unit',u,n});
+}
+function startReview(kind){
+  let pick;
+  if(kind==='mist')pick=shuffle(S.mist).slice(0,10).map(id=>{const[u,i]=id.split('-').map(Number);return{u,i}}).filter(r=>UNITS[r.u]&&UNITS[r.u].items[r.i]);
+  else{const us=UNITS.map((_,u)=>u).filter(u=>S.prog[u]>0||u===0);pick=shuffle(us.flatMap(u=>UNITS[u].items.map((_,i)=>({u,i})))).slice(0,8)}
+  if(!pick.length)return;
+  begin(pick,{mode:'review'});
+}
+function begin(items,meta){
+  L=Object.assign({queue:items,pos:0,total:items.length,done:0,xp:0,miss:0,missed:new Set(),phase:'ask'},meta);
+  $('#lesson').hidden=false;document.body.style.overflow='hidden';
+  showEx();
+}
+function cur(){const r=L.queue[L.pos];return{r,d:UNITS[r.u].items[r.i],id:r.u+'-'+r.i}}
+function setFoot(state,html){const f=$('#foot');f.className='l-foot'+(state?' '+state:'');$('#fb').innerHTML=html||''}
+function lessonHearts(){$('#lhp').innerHTML=L.mode==='review'?'':I.heart+S.hearts}
+
+function showEx(){
+  const{d,id}=cur();
+  $('#bar').style.width=(L.done/L.total*100)+'%';lessonHearts();
+  L.phase='ask';L.sel=null;setFoot('');
+  const go=$('#go');go.textContent='Comprobar';go.disabled=true;go.className='btn';go.hidden=false;
+  const again=L.missed.has(id);
+  let h=`<div class="kind ${again?'again':''}">${again?'Otra vez · ':''}${KINDS[d.t]}</div>`;
+  const ex=$('#ex');
+  if(d.t==='gap'||d.t==='mc'){
+    L.opts=shuffle(d.o);
+    h+=d.t==='gap'?`<div class="sent">${esc(d.s).replace('___','<span class="slot" id="slot">&nbsp;</span>')}</div>`:`<h2 class="q">${esc(d.q)}</h2>`;
+    h+=`<div class="opts">${L.opts.map((o,k)=>`<button class="opt" data-k="${k}" aria-pressed="false">${esc(o)}</button>`).join('')}</div>`;
+    ex.innerHTML=h;
+    ex.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(L.phase!=='ask')return;
+      ex.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');
+      L.sel=L.opts[+b.dataset.k];if($('#slot'))$('#slot').textContent=L.sel;go.disabled=false});
+  }
+  else if(d.t==='order'||d.t==='listen'){
+    const audio=d.t==='listen'&&canSpeak;
+    L.bank=shuffle(d.en.split(' ').concat(d.extra||[]));L.ans=[];
+    h+=audio?`<div class="speak"><button class="spk" id="spk" aria-label="Escuchar">${I.speaker}</button><button class="spk slow" id="spkS" aria-label="Escuchar despacio">${I.turtle}</button></div>`
+            :`<div class="es">${esc(d.es)}</div>`;
+    h+=`<div class="answer-line" id="aline"></div><div class="bank" id="bank"></div>`;
+    ex.innerHTML=h;
+    if(audio){$('#spk').onclick=()=>speak(d.en);$('#spkS').onclick=()=>speak(d.en,.6);setTimeout(()=>speak(d.en),250)}
+    drawTiles();
+  }
+  else if(d.t==='write'){
+    h+=`<div class="es">${esc(d.es)}</div><textarea id="inp" placeholder="Escribe en inglés…" autocomplete="off" autocapitalize="sentences" spellcheck="false"></textarea>`;
+    ex.innerHTML=h;const inp=$('#inp');inp.oninput=()=>go.disabled=!inp.value.trim();
+    inp.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!go.disabled)go.click()}};
+    setTimeout(()=>inp.focus(),50);
+  }
+  else if(d.t==='match'){
+    const idx=d.pairs.map((_,k)=>k);L.m={l:shuffle(idx),r:shuffle(idx),sl:null,sr:null,ok:new Set(),err:0};
+    h+=`<div class="match"><div class="col" id="ml"></div><div class="col" id="mr"></div></div>`;
+    ex.innerHTML=h;go.hidden=true;drawMatch();
+  }
+  $('.l-body').scrollTop=0;
+}
+function drawTiles(){
+  const go=$('#go');
+  $('#aline').innerHTML=L.ans.map((bi,k)=>`<button class="tile" data-a="${k}">${esc(L.bank[bi])}</button>`).join('');
+  $('#bank').innerHTML=L.bank.map((w,k)=>`<button class="tile ${L.ans.includes(k)?'used':''}" data-b="${k}" ${L.ans.includes(k)?'tabindex="-1" aria-hidden="true"':''}>${esc(w)}</button>`).join('');
+  document.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{if(L.phase!=='ask'||L.ans.includes(+b.dataset.b))return;L.ans.push(+b.dataset.b);drawTiles()});
+  document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{if(L.phase!=='ask')return;L.ans.splice(+b.dataset.a,1);drawTiles()});
+  go.disabled=!L.ans.length;
+}
+function drawMatch(){
+  const{d}=cur(),m=L.m;
+  const cell=(side,k,txt)=>{const sel=side==='l'?m.sl===k:m.sr===k;return `<button class="mt ${m.ok.has(k)?'ok':''}" data-${side}="${k}" aria-pressed="${sel}" ${m.ok.has(k)?'disabled':''}>${esc(txt)}</button>`};
+  $('#ml').innerHTML=m.l.map(k=>cell('l',k,d.pairs[k][0])).join('');
+  $('#mr').innerHTML=m.r.map(k=>cell('r',k,d.pairs[k][1])).join('');
+  document.querySelectorAll('.mt[data-l]').forEach(b=>b.onclick=()=>{const k=+b.dataset.l;m.sl=k;speak(d.pairs[k][0]);pickMatch()});
+  document.querySelectorAll('.mt[data-r]').forEach(b=>b.onclick=()=>{m.sr=+b.dataset.r;pickMatch()});
+}
+function pickMatch(){
+  const m=L.m,{d}=cur();
+  if(m.sl===null||m.sr===null){drawMatch();return}
+  if(m.sl===m.sr){m.ok.add(m.sl);m.sl=m.sr=null;drawMatch();
+    if(m.ok.size===d.pairs.length)resolve(true,'');}
+  else{const a=m.sl,b=m.sr;m.err++;m.sl=m.sr=null;drawMatch();
+    const l=document.querySelector(`[data-l="${a}"]`),r=document.querySelector(`[data-r="${b}"]`);
+    [l,r].forEach(x=>x&&x.classList.add('no'));setTimeout(()=>[l,r].forEach(x=>x&&x.classList.remove('no')),450);}
+}
+function check(){
+  const{d}=cur();let ok=false,ans='',typo=false;
+  if(d.t==='gap'){ok=L.sel===d.o[0];ans=d.s.replace('___',d.o[0])}
+  else if(d.t==='mc'){ok=L.sel===d.o[0];ans=d.o[0]}
+  else if(d.t==='order'||d.t==='listen'){ok=norm(L.ans.map(k=>L.bank[k]).join(' '))===norm(d.en);ans=d.en+'.'}
+  else if(d.t==='write'){
+    const v=norm($('#inp').value);ans=d.ans[0].charAt(0).toUpperCase()+d.ans[0].slice(1)+'.';
+    for(const a of d.ans){const n=norm(a);if(v===n){ok=true;break}if(lev(v,n)<=Math.max(1,Math.floor(n.length/20))){ok=true;typo=true;ans=a.charAt(0).toUpperCase()+a.slice(1)+'.'}}
+  }
+  resolve(ok,ans,typo);
+}
+function resolve(ok,ans,typo){
+  const{d,id,r}=cur();L.phase='fb';
+  const first=!L.missed.has(id);
+  const en=d.t==='gap'?d.s.replace('___',d.o[0]):d.t==='mc'?(/[áéíóúñ¿]/i.test(d.o[0])?'':d.o[0]):d.t==='write'?ans:d.t==='match'?'':d.en;
+  const spk=en&&canSpeak?`<button aria-label="Escuchar" data-say="${esc(en)}">${I.speaker}</button>`:'';
+  if(ok){
+    L.done++;L.xp+=first?10:5;
+    if(L.mode==='review'||!first)S.mist=S.mist.filter(x=>x!==id);
+    const praise=['¡Muy bien!','¡Perfecto!','¡Correcto!','¡Genial!','¡Así se hace!'][Math.random()*5|0];
+    setFoot('good',`<h3>${I.check}${praise}</h3>${typo?`<div class="ans">Ojo con la ortografía: ${esc(ans)}${spk}</div>`:(spk&&d.t!=='mc'?`<div class="ans">${esc(en)}${spk}</div>`:'')}`);
+  }else{
+    L.miss++;L.missed.add(id);L.queue.push(r);
+    if(!S.mist.includes(id))S.mist.push(id);if(S.mist.length>40)S.mist.shift();
+    if(L.mode!=='review'){loseHeart();lessonHearts()}
+    setFoot('bad',`<h3>${I.x}Respuesta correcta:</h3><div class="ans">${esc(ans)}${spk}</div>${d.tip?`<div class="tip">${esc(d.tip)}</div>`:''}`);
+  }
+  save();
+  $('#bar').style.width=(L.done/L.total*100)+'%';
+  const go=$('#go');go.hidden=false;go.disabled=false;go.textContent='Continuar';go.className='btn '+(ok?'good':'bad');go.focus({preventScroll:true});
+  const sb=document.querySelector('[data-say]');if(sb)sb.onclick=()=>speak(sb.dataset.say);
+}
+$('#go').onclick=()=>{
+  if(L.phase==='ask')return check();
+  if(L.phase==='fb'){
+    if(L.mode!=='review'&&S.hearts===0)return endLesson(false);
+    L.pos++;if(L.pos>=L.queue.length)return endLesson(true);
+    showEx();
+  }else if(L.phase==='end')closeLesson();
+};
+document.addEventListener('keydown',e=>{
+  if($('#lesson').hidden||e.key!=='Enter'||e.target.tagName==='TEXTAREA'||e.target.tagName==='BUTTON')return;
+  const go=$('#go');if(!go.disabled&&!go.hidden)go.click();
+});
+function endLesson(win){
+  L.phase='end';setFoot('');
+  const go=$('#go');go.className='btn';go.textContent='Continuar';go.hidden=false;go.disabled=false;
+  if(!win){
+    $('#ex').innerHTML=`<div class="result"><div class="badge sad">${I.heart}</div><h1>Sin vidas</h1><p>Recuperas una cada 20 minutos. Completa un repaso para ganar una ya.</p></div>`;
+    return;
+  }
+  const perfect=L.miss===0;if(perfect)L.xp+=5;
+  const today=ymd();
+  if(S.last!==today){S.streak=S.last===yest()?S.streak+1:1;S.last=today}
+  S.best=Math.max(S.best,S.streak);
+  S.xp+=L.xp;S.days[today]=(S.days[today]||0)+L.xp;
+  let msg='Lección completada.';
+  if(L.mode==='unit'&&L.n===S.prog[L.u]){S.prog[L.u]++;msg=S.prog[L.u]===3?(L.u<UNITS.length-1?`¡Unidad ${L.u+1} terminada! Se abre la unidad ${L.u+2}.`:'¡Has completado toda la ruta B1!'):'Siguiente lección desbloqueada.'}
+  if(L.mode==='review'){S.hearts=Math.min(MAXH,S.hearts+1);msg='Repaso completado. +1 vida.'}
+  save();
+  const acc=Math.round(L.total/(L.total+L.miss)*100);
+  $('#bar').style.width='100%';
+  $('#ex').innerHTML=`<div class="result"><div class="badge">${I.star}</div><h1>${perfect?'¡Lección perfecta!':'¡Lección superada!'}</h1><p>${msg}</p>
+   <div class="trio"><div><b>+${L.xp}</b><span>XP</span></div><div><b>${acc}%</b><span>Acierto</span></div><div><b>${S.streak}</b><span>Racha</span></div></div></div>`;
+}
+function closeLesson(){try{speechSynthesis.cancel()}catch(e){}$('#lesson').hidden=true;document.body.style.overflow='';L=null;render()}
+$('#quit').onclick=()=>{
+  if(!L||L.phase==='end')return closeLesson();
+  confirmDlg('¿Salir de la lección?','Perderás el progreso de esta lección. Las vidas gastadas no se recuperan.','Salir',closeLesson,'Seguir aprendiendo');
+};
+
+render();
+initCloud();
+setInterval(()=>{if($('#lesson').hidden)renderStats()},15000);
+</script>
+
+</body>
+</html>
