@@ -4,11 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2E47D6">
-<title>Ruta B1</title>
+<title>Ruta B2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
 <style>
-/* Layout: one-column app, units as stations on a vertical line toward B1; lessons are full-screen exercise cards */
+/* Layout: one-column app, units as stations on a vertical line toward B2; lessons are full-screen exercise cards */
 :root{
   --bg:#F3F5FB; --surface:#FFFFFF; --sunk:#E6EAF5; --ink:#161C38; --muted:#5A6283; --line:#D3D9EA;
   --accent:#2E47D6; --accent-deep:#1E31A3; --accent-soft:#E2E7FF; --accent-ink:#FFFFFF;
@@ -186,14 +189,28 @@ textarea{width:100%;min-height:120px;font:inherit;font-size:18px;padding:14px;bo
 .sync{font-size:14px;color:var(--muted);margin:0 0 14px}
 .sync.err{color:var(--bad)}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
-</style>
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-</head>
-<body>
 
+/* B2 additions */
+.inl{font:inherit;font-size:20px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:0;border-bottom:3px solid var(--accent);border-radius:8px 8px 0 0;padding:2px 8px;max-width:100%;margin:2px 0;vertical-align:baseline}
+.stem-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 22px;font-size:13px;font-weight:700;color:var(--muted)}
+.chip{font-family:var(--f-display);font-size:18px;letter-spacing:.06em;background:var(--warm-soft);color:var(--ink);border:2px solid var(--warm);border-radius:10px;padding:3px 12px}
+.note{font-size:14px;color:var(--muted);margin:-12px 0 0}
+.toks{display:flex;flex-wrap:wrap;gap:8px}
+.tok{background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:7px 11px;font-size:19px;font-weight:600;box-shadow:0 3px 0 var(--line)}
+.tok[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.tok.right{border-color:var(--good);background:var(--good-soft);color:var(--ink)}
+.tok.wrong{border-color:var(--bad);background:var(--bad-soft);text-decoration:line-through}
+details.theory{margin-top:12px;border-top:1px solid color-mix(in srgb,currentColor 25%,transparent);padding-top:10px}
+details.theory summary{cursor:pointer;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+details.theory div{font-size:14px;line-height:1.55;margin-top:8px}
+.stop.exam .node{border-radius:12px}
+.stop.free .node{background:var(--accent-soft);color:var(--accent)}
+.btn-col{display:grid;gap:10px}
+.field{display:grid;gap:6px;margin-bottom:12px}
+</style>
 
 <header class="top"><div class="wrap">
-  <div class="brand">Ruta <b>B1</b></div>
+  <div class="brand">Ruta <b>B2</b></div>
   <div class="stats" id="stats"></div>
 </div></header>
 <main class="wrap" id="view"></main>
@@ -219,6 +236,512 @@ textarea{width:100%;min-height:120px;font:inherit;font-size:18px;padding:14px;bo
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
 <script>
+/* ---------- content ---------- */
+const G=(s,o,tip)=>({t:'gap',s,o,tip});              // o[0] es la correcta
+const M=(q,o,tip)=>({t:'mc',q,o,tip});                // o[0] es la correcta
+const O=(es,en,extra,tip)=>({t:'order',es,en,extra,tip});
+const W=(es,ans,tip)=>({t:'write',es,ans,tip});
+const H=(en,es,extra)=>({t:'listen',en,es,extra});
+const P=pairs=>({t:'match',pairs});
+const OC=(s,ans,tip)=>({t:'open',s,ans,tip});
+const WF=(s,stem,ans,tip)=>({t:'wf',s,stem,ans,tip});
+const K=(s1,key,s2,ans,tip)=>({t:'kwt',s1,key,s2,ans,tip});
+const E=(s,fix,tip)=>({t:'err',s,fix,tip});            // *palabra* marcada = la incorrecta
+
+const UNITS=[
+/* 1 */
+{title:"Contar historias",can:"Narrar con precisión qué pasó antes, qué estaba pasando y qué llevaba tiempo pasando.",
+ key:"<b>Past perfect</b> (had + participio): lo anterior a otro pasado. <b>Past perfect continuous</b> (had been + -ing): duración hasta un momento pasado. <b>Past continuous</b>: acción en curso interrumpida. <b>would / used to</b>: hábitos pasados (used to no lleva duración concreta).",
+ items:[
+ G("By the time we arrived, the film ___.",["had already started","already started","has already started"],"Acción anterior a otro pasado: past perfect."),
+ G("She was exhausted because she ___ all day.",["had been working","has been working","was worked"],"Duración hasta un momento del pasado: past perfect continuous."),
+ G("When I got home, I realised I ___ my keys at the office.",["had left","have left","was leaving"],"Dejar las llaves ocurrió antes de darse cuenta."),
+ G("They ___ for two hours when the rescue team found them.",["had been walking","were walking","have walked"],"for + duración antes de otra acción pasada."),
+ G("It was the first time I ___ such a beautiful place.",["had seen","saw","have seen"],"It was the first time + past perfect."),
+ G("As a child, I ___ spend hours reading in my room.",["would","was","had"],"would + infinitivo para hábitos repetidos del pasado."),
+ G("I ___ the email until my boss mentioned it.",["hadn't read","didn't read yet","haven't read"],"Negativa anterior a otro pasado: hadn't + participio."),
+ G("While I ___ dinner, someone knocked on the door.",["was cooking","had cooked","cooked"],"Acción en curso interrumpida: past continuous."),
+ G("Her eyes were red. She ___.",["had been crying","has cried","was cried"],"Resultado visible de una actividad anterior: past perfect continuous."),
+ M("¿Qué frase indica que el tren salió ANTES de que llegáramos?",["When we got to the station, the train had left.","When we got to the station, the train left.","When we got to the station, the train was leaving."],"had left = ya se había ido."),
+ M("¿Cuál es correcta?",["I didn't recognise him because he had grown a beard.","I didn't recognise him because he grew a beard.","I hadn't recognised him because he has grown a beard."],"La barba es anterior al momento de no reconocerlo."),
+ M("¿En qué frase NO se puede usar \"used to\"?",["I lived in Leeds for three years.","I played tennis every weekend.","I smoked when I was young."],"used to no va con una duración concreta (for three years)."),
+ OC("I had never ___ to Scotland before that trip.",["been"],"never been = nunca había estado."),
+ OC("We had ___ waiting for over an hour when the doctor finally appeared.",["been"],"had been + -ing."),
+ OC("By the ___ I finished my degree, I had already found a job.",["time"],"By the time = para cuando."),
+ K("The concert started before we arrived.","ALREADY","When we arrived, the concert ___.",["had already started","had already begun"],"already va entre had y el participio."),
+ K("I hadn't eaten sushi before that night.","FIRST","That night was the ___ eaten sushi.",["first time I had","first time I'd"],"the first time + past perfect."),
+ K("He finished the report and then he went home.","AFTER","He went home ___ the report.",["after he had finished","after finishing","after having finished","after he finished"],"after + past perfect o -ing."),
+ E("When I arrived at the party, most people *left* already.","When I arrived at the party, most people had already left.","Acción anterior a otra en pasado: past perfect."),
+ E("She was tired because she *has* been studying all night.","She was tired because she had been studying all night.","Contexto pasado: had been."),
+ E("I *was* *knowing* the answer, but I didn't say anything.","I knew the answer, but I didn't say anything.","know es un verbo de estado: no va en continuo."),
+ O("Cuando llegamos, ya se habían ido.","When we arrived they had already left",["have","leave"],"had already + participio."),
+ O("Llevaba horas esperando cuando por fin llamó.","I had been waiting for hours when he finally called",["was","since"],"had been + -ing + for."),
+ O("Nunca había visto nada igual.","I had never seen anything like it",["saw","ever"],"had never + participio."),
+ W("Él se dio cuenta de que había perdido la cartera.",["He realised he had lost his wallet","He realised that he had lost his wallet"],"Perder ocurrió antes: had lost."),
+ W("Habíamos estado conduciendo durante cinco horas.",["We had been driving for five hours"],"had been + -ing + for."),
+ H("By the time I got there everyone had gone home","Para cuando llegué, todos se habían ido a casa.",["went","have"]),
+ H("She had been living abroad for years","Llevaba años viviendo en el extranjero.",["has","since"]),
+ P([["had left","se había ido"],["had been waiting","llevaba esperando"],["was leaving","se estaba yendo"],["left","se fue"],["would go","solía ir"]]),
+ P([["eventually","finalmente, al final"],["meanwhile","mientras tanto"],["afterwards","después"],["at first","al principio"],["suddenly","de repente"]])
+ ]},
+/* 2 */
+{title:"Del presente al futuro",can:"Hablar de lo que llevas tiempo haciendo y de lo que estarás haciendo o habrás hecho.",
+ key:"<b>Present perfect continuous</b> (have been + -ing): actividad que empezó antes y sigue o acaba de terminar. <b>Future continuous</b> (will be + -ing): acción en curso en un momento futuro. <b>Future perfect</b> (will have + participio): terminado antes de un momento futuro. <b>be about to</b>: a punto de. <b>be due to</b>: previsto.",
+ items:[
+ G("I ___ for you for over an hour! Where have you been?",["have been waiting","am waiting","waited"],"Actividad que empieza en el pasado y llega hasta ahora."),
+ G("This time tomorrow, I ___ on a beach in Mallorca.",["will be lying","will lie","am lying"],"Acción en curso en un momento futuro: future continuous."),
+ G("By 2030, they ___ the new hospital.",["will have built","will build","are building"],"Terminado antes de un momento futuro: future perfect."),
+ G("Hurry up! The train is ___ to leave.",["about","going","due"],"be about to = estar a punto de."),
+ G("The plane is due ___ at 6:15.",["to land","landing","land"],"be due to + infinitivo = está previsto que."),
+ G("How long ___ English?",["have you been learning","are you learning","do you learn"],"How long + present perfect continuous."),
+ G("I've ___ three emails this morning.",["written","been writing","wrote"],"Cantidad terminada (three emails): present perfect simple."),
+ G("Don't call at eight. We ___ dinner then.",["will be having","will have had","have"],"Acción en curso a esa hora."),
+ G("By the time you get home, I ___ the cooking.",["will have finished","will finish","finish"],"Terminado antes de que llegues."),
+ G("Your hands are dirty. What ___?",["have you been doing","did you do","are you doing"],"Pruebas de una actividad reciente."),
+ M("¿Qué significa \"I'll have finished it by Friday\"?",["Lo tendré terminado como muy tarde el viernes","Empezaré a terminarlo el viernes","Lo estaré terminando el viernes"],"by = como muy tarde; future perfect = terminado."),
+ M("¿Cuál es correcta?",["I've known her since we were at school.","I've been knowing her since we were at school.","I know her since we were at school."],"know es verbo de estado: present perfect simple."),
+ M("\"Will you be using the car tonight?\" suena…",["Educado: preguntas por sus planes sin pedir directamente","Más brusco que \"Will you use…?\"","Incorrecto gramaticalmente"],"El future continuous suaviza preguntas sobre planes."),
+ OC("I have been living here ___ 2015.",["since"],"since + punto de inicio."),
+ OC("By this time next year, I will ___ graduated.",["have"],"will have + participio."),
+ OC("Sorry I'm late. Have you been waiting ___ long?",["for"],"for long = mucho tiempo."),
+ K("I started learning the guitar two years ago.","BEEN","I ___ the guitar for two years.",["have been learning","have been playing"],"…ago → have been + -ing + for."),
+ K("The meeting will finish before you arrive.","HAVE","The meeting ___ by the time you arrive.",["will have finished","will have ended"],"Future perfect."),
+ K("It's the first time I've tried Thai food.","NEVER","I ___ Thai food before.",["have never tried","have never eaten","have never had"],"It's the first time = never … before."),
+ E("I *am* living in this flat since 2018.","I have been living in this flat since 2018.","Con since: present perfect continuous."),
+ E("By next June, she *will* *finish* her master's degree.","By next June, she will have finished her master's degree.","by + momento futuro: future perfect."),
+ E("How long *are* you working here?","How long have you been working here?","How long + present perfect continuous."),
+ O("Llevo toda la mañana trabajando en esto.","I have been working on this all morning",["since","worked"],"present perfect continuous."),
+ O("Mañana a estas horas estaremos volando a Londres.","This time tomorrow we will be flying to London",["fly","have"],"future continuous."),
+ O("Para el viernes habré terminado el informe.","I will have finished the report by Friday",["until","finish"],"future perfect + by."),
+ W("¿Cuánto tiempo llevas esperando?",["How long have you been waiting"],"How long have you been + -ing?"),
+ W("Estamos a punto de salir.",["We are about to leave","We are about to go out","We are about to go"],"be about to."),
+ H("I will have finished by the time you arrive","Habré terminado para cuando llegues.",["finish","until"]),
+ H("We have been waiting for ages","Llevamos siglos esperando.",["since","waited"]),
+ P([["since","desde (un punto)"],["for","durante (un periodo)"],["by","como muy tarde"],["until","hasta"],["so far","hasta ahora"]]),
+ P([["be about to","estar a punto de"],["be due to","estar previsto que"],["be bound to","ser seguro que"],["be likely to","ser probable que"],["be on the verge of","estar al borde de"]])
+ ]},
+/* 3 */
+{title:"Condicionales y deseos",can:"Imaginar pasados distintos, lamentar decisiones y expresar deseos y quejas.",
+ key:"<b>Third</b>: if + past perfect, would have + participio. <b>Mixto</b>: if + past perfect, would + infinitivo (pasado → presente). <b>wish</b> + pasado (presente), + past perfect (pasado), + would (quejas). <b>I'd rather you</b> + pasado. <b>It's time</b> + pasado. <b>Had I known…</b> = If I had known…",
+ items:[
+ G("If I had known you were ill, I ___ you.",["would have visited","would visit","had visited"],"Third conditional: would have + participio."),
+ G("If she ___ harder, she would have passed.",["had studied","studied","would have studied"],"if + past perfect."),
+ G("If I had taken that job, I ___ in New York now.",["would be living","would have lived","will live"],"Mixto: decisión pasada → consecuencia presente."),
+ G("I wish I ___ more free time. I'm always busy.",["had","have","would have"],"Deseo sobre el presente: wish + pasado."),
+ G("I wish I ___ to her party last week. Everyone says it was great.",["had gone","went","would go"],"Lamento sobre el pasado: wish + past perfect."),
+ G("I wish you ___ interrupting me all the time!",["would stop","stopped","had stopped"],"Queja sobre la conducta de alguien: wish + would."),
+ G("It's high time you ___ a job.",["got","get","will get"],"It's time + pasado."),
+ G("I'd rather you ___ smoke in the house.",["didn't","don't","wouldn't"],"I'd rather + sujeto + pasado."),
+ G("___ you need any help, just give me a call.",["Should","Would","Had"],"Should you… = If you need… (formal)."),
+ G("Take an umbrella in ___ it rains.",["case","order","fact"],"in case = por si."),
+ M("\"If I were taller, I would have been a basketball player.\" ¿Qué expresa?",["Algo que sigue siendo cierto hoy con una consecuencia pasada","Una situación futura posible","Es un error gramatical"],"Mixto: presente → pasado."),
+ M("¿Cuál es correcta?",["If only I hadn't said that!","If only I didn't say that yesterday!","If only I wouldn't have said that!"],"If only + past perfect para el pasado."),
+ M("\"Provided that you pay on time\" significa…",["Siempre que pagues a tiempo","A menos que pagues a tiempo","Aunque pagues a tiempo"],"provided that = as long as."),
+ OC("If it hadn't ___ for your help, I would have failed.",["been"],"If it hadn't been for = de no ser por."),
+ OC("I'll lend you the money ___ long as you pay me back.",["as"],"as long as = siempre que."),
+ OC("___ I known about the traffic, I would have left earlier.",["Had"],"Inversión: Had I known = If I had known."),
+ K("I didn't know her number, so I didn't call her.","IF","I would have called her ___ her number.",["if I had known","if I'd known"],"Third conditional."),
+ K("I regret not studying harder at school.","WISH","I ___ harder at school.",["wish I had studied"],"regret + -ing → wish + past perfect."),
+ K("You should go to bed now; it's late.","TIME","It's ___ to bed.",["time you went","high time you went","about time you went"],"It's time + sujeto + pasado."),
+ K("Without your advice, I would have made a mistake.","FOR","If it ___ your advice, I would have made a mistake.",["hadn't been for"],"If it hadn't been for = sin."),
+ E("If I *would* *have* known, I would have told you.","If I had known, I would have told you.","Nunca would en la parte del if."),
+ E("I wish I *can* speak Chinese.","I wish I could speak Chinese.","wish + pasado: can → could."),
+ E("I'd rather you *don't* tell anyone.","I'd rather you didn't tell anyone.","I'd rather + sujeto + pasado."),
+ O("Si hubiera salido antes, no habría perdido el tren.","If I had left earlier I would not have missed the train",["lost","will"],"Third conditional; perder el tren = miss the train."),
+ O("Ojalá supiera la respuesta.","I wish I knew the answer",["know","would"],"wish + past simple."),
+ O("Ya es hora de que nos vayamos.","It is time we left",["leave","go"],"It's time + sujeto + pasado."),
+ W("Ojalá no hubiera dicho eso.",["I wish I hadn't said that","If only I hadn't said that"],"wish + past perfect."),
+ W("Si yo fuera tú, no lo haría.",["If I were you I wouldn't do it","If I was you I wouldn't do it","I wouldn't do it if I were you"],"If I were you…"),
+ H("If I had known you were coming I would have cooked","Si hubiera sabido que venías, habría cocinado.",["knew","will"]),
+ H("I wish you would listen to me","Ojalá me escucharas.",["listened","will"]),
+ P([["unless","a menos que"],["provided that","siempre y cuando"],["in case","por si acaso"],["otherwise","de lo contrario"],["supposing","suponiendo que"]])
+ ]},
+/* 4 */
+{title:"Pasiva avanzada",can:"Usar la pasiva en todos los tiempos, la pasiva impersonal y la causativa.",
+ key:"Pasiva en cualquier tiempo: <i>is being done, had been done, will have been done</i>. <b>Impersonal</b>: <i>It is said that… / He is said to be… / He is believed to have left</i>. <b>Causativa</b>: <i>have/get something done</i> (alguien lo hace por ti). <b>need + -ing</b> = necesita que lo hagan.",
+ items:[
+ G("The road ___ at the moment, so take another route.",["is being repaired","is repairing","has repaired"],"Pasiva continua: is being + participio."),
+ G("When we arrived, the tickets ___ already been sold.",["had","have","were"],"Past perfect pasiva: had been + participio."),
+ G("I'm going to ___ my hair cut tomorrow.",["have","make","do"],"have something done."),
+ G("We got our kitchen ___ last year.",["redecorated","redecorate","to redecorate"],"get + objeto + participio."),
+ G("He is said ___ one of the richest men in Spain.",["to be","being","be"],"be said + to + infinitivo."),
+ G("The thief is believed ___ the country last night.",["to have left","to leave","leaving"],"Hecho pasado: to have + participio."),
+ G("It ___ that the company will close next year.",["is rumoured","rumours","is rumouring"],"It is + participio + that."),
+ G("The project will ___ completed by June.",["have been","be being","has been"],"Future perfect pasiva."),
+ G("My car needs ___.",["servicing","to service","serviced"],"need + -ing = necesita que lo revisen."),
+ G("She hates ___ what to do.",["being told","telling","to tell"],"Gerundio pasivo: being + participio."),
+ M("\"I had my phone stolen\" significa…",["Me robaron el móvil","Pedí que me robaran el móvil","Robé mi móvil"],"have something done también sirve para cosas malas que te pasan."),
+ M("¿Cuál es correcta?",["The results are expected to be announced tomorrow.","The results expect to be announced tomorrow.","The results are expected announcing tomorrow."],"be expected + to + infinitivo."),
+ M("¿Cuál NO es una pasiva correcta?",["The letter was wrote by her.","The letter was written by her.","The letter had been written by her."],"write → wrote → written."),
+ OC("The castle is thought ___ have been built in the 12th century.",["to"],"be thought to have + participio."),
+ OC("We ___ our windows cleaned twice a year.",["have","get"],"have/get something done."),
+ OC("Smoking isn't allowed. If you smoke, you will be asked ___ leave.",["to"],"be asked to + infinitivo."),
+ K("People say that he is a genius.","SAID","He ___ a genius.",["is said to be"],"People say → He is said to be."),
+ K("A mechanic is repairing my car.","HAVING","I ___ repaired.",["am having my car"],"have something done en continuo."),
+ K("They will deliver the furniture tomorrow.","BE","The furniture ___ tomorrow.",["will be delivered"],"Pasiva con will."),
+ K("It is believed that the ship sank in 1820.","HAVE","The ship is believed ___ in 1820.",["to have sunk"],"Pasado: to have + participio."),
+ E("The new bridge is *building* right now.","The new bridge is being built right now.","El puente no construye: pasiva continua."),
+ E("I need to have my eyes *test*.","I need to have my eyes tested.","have + objeto + participio."),
+ E("She is known *being* very generous.","She is known to be very generous.","be known + to + infinitivo."),
+ O("Se dice que es el mejor restaurante de la ciudad.","It is said to be the best restaurant in the city",["says","being"],"be said to be."),
+ O("Me van a arreglar el ordenador mañana.","I am having my computer repaired tomorrow",["repair","make"],"Causativa en continuo para planes."),
+ O("La reunión ha sido cancelada.","The meeting has been cancelled",["was","cancel"],"Present perfect pasiva."),
+ W("Me corté el pelo ayer (en la peluquería).",["I had my hair cut yesterday","I got my hair cut yesterday"],"have/get my hair cut."),
+ W("Se cree que el ladrón está en Francia.",["The thief is believed to be in France","It is believed that the thief is in France"],"Pasiva impersonal."),
+ H("The results will be published next week","Los resultados se publicarán la semana que viene.",["publish","are"]),
+ H("We are having the house painted","Nos están pintando la casa.",["paint","make"]),
+ P([["is being built","se está construyendo"],["had been built","se había construido"],["will have been built","se habrá construido"],["has been built","se ha construido"],["was built","se construyó"]])
+ ]},
+/* 5 */
+{title:"Deducciones y lamentos",can:"Hacer deducciones sobre el presente y el pasado y criticar lo que se hizo o no se hizo.",
+ key:"<b>must</b> (seguro que sí), <b>can't</b> (seguro que no), <b>might/may/could</b> (posible). En pasado: <i>must have / can't have / might have</i> + participio. <b>should have</b>: crítica. <b>needn't have</b>: lo hiciste y no hacía falta. <b>didn't need to</b>: no hacía falta. Logro concreto en pasado: <b>was able to</b>, no could.",
+ items:[
+ G("The lights are on. They ___ be at home.",["must","can't","should"],"Deducción segura afirmativa: must."),
+ G("He ___ be hungry. He's just eaten a huge pizza.",["can't","mustn't","needn't"],"Deducción negativa: can't (no mustn't)."),
+ G("She isn't answering. She ___ have gone to bed already.",["might","must not","should"],"Posibilidad en pasado: might have."),
+ G("You ___ have told me! I would have helped you.",["should","must","can"],"Crítica sobre el pasado: should have."),
+ G("I ___ have bought so much food. Nobody was hungry.",["needn't","mustn't","couldn't"],"Lo hiciste y no hacía falta: needn't have."),
+ G("They ___ have seen us. It was completely dark.",["can't","mustn't","shouldn't"],"Imposible en pasado: can't have."),
+ G("You look exhausted. You must ___ working all night.",["have been","be","had been"],"must have been + -ing."),
+ G("We ___ to book a table; the restaurant was empty.",["didn't need","needn't","mustn't"],"didn't need to + infinitivo."),
+ G("I ___ swim when I was four.",["could","was able","can"],"Habilidad general en el pasado: could."),
+ G("Despite the storm, the pilot ___ land the plane safely.",["was able to","could","can"],"Logro concreto en el pasado: was able to."),
+ M("\"You needn't have come\" significa…",["Viniste, pero no hacía falta","No viniste porque no hacía falta","No debías venir"],"needn't have + participio."),
+ M("Llaman a la puerta a las 9 y estás esperando a Ana. ¿Qué dices?",["That must be Ana.","That can be Ana.","That must have been Ana."],"Deducción presente: must be."),
+ M("¿Cuál es correcta?",["He might not have received my message.","He might have not received my message ago.","He mights not have received my message."],"might not have + participio."),
+ OC("You ___ have left your umbrella on the bus. Did you check?",["might","may","could","must"],"Posibilidad o deducción en pasado."),
+ OC("You shouldn't ___ said that. She's very upset now.",["have"],"shouldn't have + participio."),
+ OC("I'm not sure, but she ___ be working from home today.",["might","may","could"],"Posibilidad: might / may / could."),
+ K("I'm sure he forgot about the meeting.","MUST","He ___ about the meeting.",["must have forgotten"],"I'm sure + pasado → must have."),
+ K("It's impossible that she said that.","CAN'T","She ___ that.",["can't have said"],"can't have + participio."),
+ K("It was a mistake to sell the house.","SHOULDN'T","We ___ the house.",["shouldn't have sold"],"Crítica del pasado."),
+ K("Perhaps they missed the bus.","MIGHT","They ___ the bus.",["might have missed"],"Perhaps + pasado → might have."),
+ E("He *mustn't* be rich; he lives in a tiny flat.","He can't be rich; he lives in a tiny flat.","Deducción negativa: can't."),
+ E("You should have *call* me earlier.","You should have called me earlier.","should have + participio."),
+ E("After three hours, we finally *could* open the door.","After three hours, we were finally able to open the door.","Logro concreto en pasado: were able to / managed to."),
+ O("Debe de haberse quedado dormido.","He must have fallen asleep",["felt","be"],"must have + participio."),
+ O("No hacía falta que trajeras nada.","You needn't have brought anything",["bring","must"],"needn't have + participio."),
+ O("Podrías haberme avisado.","You could have warned me",["can","warn"],"could have = reproche suave."),
+ W("Deberías haberme llamado.",["You should have called me","You should have phoned me","You should have rung me"],"should have + participio."),
+ W("No puede haberlo hecho ella.",["She can't have done it","She couldn't have done it"],"can't have + participio."),
+ H("You must have been very tired","Debías de estar muy cansado.",["be","had"]),
+ H("They might have missed the train","Puede que hayan perdido el tren.",["lost","may"]),
+ P([["must have","seguro que…"],["can't have","es imposible que…"],["might have","puede que…"],["should have","debería haber…"],["needn't have","no hacía falta…"]])
+ ]},
+/* 6 */
+{title:"Lo que dijeron",can:"Contar lo que otros dijeron, preguntaron, sugirieron o negaron.",
+ key:"Los tiempos retroceden: present → past, past → past perfect, will → would, can → could. <i>tomorrow → the next day, here → there</i>. Preguntas indirectas sin inversión: <i>She asked where I lived</i>. Patrones: <b>suggest</b> + -ing / that; <b>advise/warn/tell</b> sb (not) to; <b>deny/admit</b> + -ing; <b>accuse</b> sb <b>of</b> + -ing; <b>apologise for</b> + -ing; <b>refuse/promise</b> to; <b>insist on</b> + -ing.",
+ items:[
+ G("She said she ___ the film the week before.",["had seen","has seen","sees"],"past → past perfect."),
+ G("He told me he would call me ___.",["the next day","tomorrow","yesterday"],"tomorrow → the next day."),
+ G("She asked me where ___.",["I lived","did I live","do I live"],"Preguntas indirectas: orden afirmativo."),
+ G("He asked me ___ I had ever been to Japan.",["if","that","what"],"Preguntas de sí/no: if / whether."),
+ G("My doctor advised me ___ smoking.",["to give up","giving up","give up"],"advise sb to + infinitivo."),
+ G("He denied ___ the money.",["taking","to take","take"],"deny + -ing."),
+ G("She accused me ___ her diary.",["of reading","to read","for reading"],"accuse sb of + -ing."),
+ G("I suggest ___ a taxi; it's late.",["taking","to take","we to take"],"suggest + -ing."),
+ G("He refused ___ me his car.",["to lend","lending","lend"],"refuse to + infinitivo."),
+ G("The teacher warned us ___ late again.",["not to be","to not being","not being"],"warn sb not to + infinitivo."),
+ G("She apologised ___ late.",["for being","to be","of being"],"apologise for + -ing."),
+ M("\"I'll help you,\" he said. →",["He promised to help me.","He promised helping me.","He promised me helping."],"promise to + infinitivo."),
+ M("\"It was me who broke the vase,\" she said. →",["She admitted breaking the vase.","She admitted to break the vase.","She denied breaking the vase."],"admit + -ing."),
+ M("¿Cuál es correcta?",["She suggested that we should leave early.","She suggested us to leave early.","She suggested to us leaving early."],"suggest + that (should) o + -ing; nunca suggest sb to."),
+ OC("He asked me ___ I wanted tea or coffee.",["whether","if"],"whether … or."),
+ OC("She insisted ___ paying for dinner.",["on"],"insist on + -ing."),
+ OC("He told me ___ to worry.",["not"],"tell sb not to."),
+ K("\"Don't touch the wires!\" the electrician told us.","WARNED","The electrician ___ the wires.",["warned us not to touch"],"warn sb not to."),
+ K("\"You lied to me!\" she said to him.","ACCUSED","She ___ to her.",["accused him of lying"],"accuse sb of + -ing."),
+ K("\"Why don't we go to the beach?\" said Tom.","SUGGESTED","Tom ___ to the beach.",["suggested going","suggested that we go","suggested that we should go","suggested we go","suggested we should go"],"suggest + -ing / that."),
+ K("\"Where is the station?\" the tourist asked me.","WHERE","The tourist asked me ___ was.",["where the station"],"Pregunta indirecta: sujeto + verbo."),
+ E("She asked me where *was* *I* going.","She asked me where I was going.","Pregunta indirecta: sin inversión."),
+ E("He *said* me that he was tired.","He told me that he was tired.","say no lleva persona detrás; tell sí."),
+ E("The manager refused *answering* my questions.","The manager refused to answer my questions.","refuse to + infinitivo."),
+ O("Me preguntó si había estado alguna vez en Roma.","He asked me if I had ever been to Rome",["have","did"],"if + past perfect."),
+ O("Me dijo que no me preocupara.","She told me not to worry",["said","don't"],"tell sb not to."),
+ O("Negó haber robado el dinero.","He denied stealing the money",["to","stole"],"deny + -ing."),
+ W("Ella me aconsejó que buscara otro trabajo.",["She advised me to look for another job","She advised me to find another job","She advised me to look for a new job","She advised me to find a new job"],"advise sb to."),
+ W("Él me preguntó dónde vivía.",["He asked me where I lived"],"Sin inversión."),
+ H("She told me she would be late","Me dijo que llegaría tarde.",["will","said"]),
+ H("He apologised for forgetting my birthday","Se disculpó por olvidar mi cumpleaños.",["to","forgot"]),
+ P([["deny","negar"],["admit","admitir"],["warn","advertir"],["remind","recordar (a alguien)"],["blame","culpar"]])
+ ]},
+/* 7 */
+{title:"¿-ing o to?",can:"Elegir entre gerundio e infinitivo y usar los verbos que cambian de significado.",
+ key:"<b>+ -ing</b>: enjoy, avoid, mind, deny, consider, imagine, can't stand, feel like, look forward to, be/get used to. <b>+ to</b>: decide, hope, manage, afford, refuse, seem. <b>Cambian de significado</b>: stop doing (dejar de) / stop to do (parar para); remember doing (recordar algo pasado) / remember to do (acordarse de); try doing (probar) / try to do (intentar); regret doing / regret to tell.",
+ items:[
+ G("I can't afford ___ a new car this year.",["to buy","buying","buy"],"afford + to."),
+ G("Would you mind ___ the window?",["opening","to open","open"],"mind + -ing."),
+ G("I stopped ___ a coffee on the way to work.",["to have","having","have"],"stop to = parar para hacer algo."),
+ G("You should stop ___; it's bad for you.",["smoking","to smoke","smoke"],"stop + -ing = dejar de."),
+ G("I remember ___ this place as a child.",["visiting","to visit","visit"],"remember + -ing = recordar algo pasado."),
+ G("Remember ___ the lights before you leave.",["to turn off","turning off","turn off"],"remember to = acordarse de hacer."),
+ G("I'm not used to ___ up so early.",["getting","get","got"],"be used to + -ing."),
+ G("It took me months to get used to ___ on the left.",["driving","drive","drove"],"get used to + -ing."),
+ G("We regret ___ you that your application was unsuccessful.",["to tell","telling","tell"],"regret to tell = lamentamos comunicarle (formal)."),
+ G("Try ___ the computer off and on again.",["turning","to turn","turn"],"try + -ing = probar a hacer."),
+ G("She managed ___ the exam despite being ill.",["to pass","passing","pass"],"manage to."),
+ G("I'm looking forward ___ from you.",["to hearing","to hear","hearing"],"look forward to + -ing."),
+ M("\"I tried to open the window\" significa…",["Intenté abrirla (con esfuerzo)","Probé a abrirla para ver si mejoraba algo","La abrí sin problemas"],"try to = esforzarse."),
+ M("\"He went on talking\" significa…",["Siguió hablando","Pasó a hablar de otra cosa","Dejó de hablar"],"go on + -ing = continuar."),
+ M("¿Cuál es correcta?",["There's no point in arguing about it.","There's no point to argue about it.","There's no point argue about it."],"There's no point (in) + -ing."),
+ OC("I'm thinking ___ moving to Valencia.",["of","about"],"Preposición + -ing."),
+ OC("It's not worth ___ a taxi; the station is very close.",["taking","getting"],"worth + -ing."),
+ OC("She can't stand ___ kept waiting.",["being"],"Gerundio pasivo."),
+ K("I find it difficult to wake up early.","USED","I'm not ___ up early.",["used to waking","used to getting"],"be used to + -ing."),
+ K("I'm sorry I didn't listen to your advice.","REGRET","I ___ to your advice.",["regret not listening","regret not having listened"],"regret + not + -ing."),
+ K("It's useless to complain.","POINT","There's ___ complaining.",["no point in","no point"],"There's no point (in)."),
+ K("Did you post the letter? I hope it didn't slip your mind.","FORGET","I hope you didn't ___ the letter.",["forget to post","forget to send"],"forget to = olvidarse de hacer."),
+ E("I'm looking forward to *see* you.","I'm looking forward to seeing you.","Aquí to es preposición: + -ing."),
+ E("We decided *going* to the mountains.","We decided to go to the mountains.","decide + to."),
+ E("I can't imagine *live* without music.","I can't imagine living without music.","imagine + -ing."),
+ O("Recuerdo haberle visto en algún sitio.","I remember seeing him somewhere",["to","saw"],"remember + -ing."),
+ O("Me estoy acostumbrando a vivir sola.","I am getting used to living alone",["live","use"],"get used to + -ing."),
+ O("Dejó de fumar hace dos años.","He stopped smoking two years ago",["to","since"],"stop + -ing."),
+ W("Intenta no llegar tarde.",["Try not to be late","Try not to arrive late"],"try not to."),
+ W("Me apetece salir esta noche.",["I feel like going out tonight"],"feel like + -ing."),
+ H("I will never forget meeting you","Nunca olvidaré cuando te conocí.",["to","met"]),
+ H("She is used to working under pressure","Está acostumbrada a trabajar bajo presión.",["work","uses"]),
+ P([["stop doing","dejar de hacer"],["stop to do","parar para hacer"],["remember doing","recordar haber hecho"],["remember to do","acordarse de hacer"],["try doing","probar a hacer"]])
+ ]},
+/* 8 */
+{title:"Relativos y participios",can:"Unir ideas con oraciones de relativo y acortar frases con participios.",
+ key:"<b>Especificativas</b> (sin comas, admiten that) y <b>explicativas</b> (con comas, nunca that). <b>whose</b> (cuyo), <b>whom</b> (tras preposición), <b>where</b>, <b>when</b>, <b>why</b>. <b>which</b> puede referirse a toda la frase. <b>what</b> = lo que. Participios: <i>Having finished…, Feeling tired…, The man sitting there…, The car stolen last week…</i>",
+ items:[
+ G("My sister, ___ lives in Paris, is coming to visit.",["who","that","which"],"Explicativa (con comas): nunca that."),
+ G("The hotel ___ we stayed was fantastic.",["where","which","that"],"Lugar sin preposición: where."),
+ G("He failed the exam, ___ surprised everyone.",["which","what","that"],"which se refiere a toda la frase."),
+ G("The woman to ___ I spoke was very helpful.",["whom","who","that"],"Tras preposición: whom."),
+ G("I'll never forget the day ___ I met you.",["when","which","where"],"Tiempo: when."),
+ G("___ finished his work, he went home.",["Having","Had","Have"],"Having + participio = después de haber."),
+ G("The man ___ next to me on the plane was a famous actor.",["sitting","sat","who sitting"],"Participio presente = who was sitting."),
+ G("The paintings ___ in the fire were priceless.",["destroyed","destroying","were destroyed"],"Participio pasado = which were destroyed."),
+ G("___ tired, I decided to go to bed early.",["Feeling","Felt","To feel"],"Participio presente como causa."),
+ G("That's the colleague ___ car was stolen.",["whose","who's","which"],"Posesión: whose."),
+ G("___ is important is that you're safe.",["What","Which","That"],"what = lo que."),
+ M("¿En cuál se puede omitir el relativo?",["The book that I bought is great.","The book that won the prize is great.","My car, which is red, is old."],"Se omite cuando es objeto en una especificativa."),
+ M("¿Cuál es correcta?",["Everything she said was true.","Everything what she said was true.","Everything which what she said was true."],"Tras everything: that o nada, nunca what."),
+ M("\"Not knowing what to do, I called my mother.\" significa…",["Como no sabía qué hacer, llamé a mi madre","Aunque sabía qué hacer, llamé a mi madre","Después de llamar a mi madre, supe qué hacer"],"Participio negativo = causa."),
+ OC("This is the reason ___ I left the company.",["why","that"],"the reason why."),
+ OC("I have two brothers, both of ___ live abroad.",["whom"],"both of whom."),
+ OC("The film, ___ was directed by a Spanish woman, won an Oscar.",["which"],"Explicativa: which."),
+ K("The man is our new boss. You met him yesterday.","WHO","The man ___ yesterday is our new boss.",["who you met"],"Relativo de objeto."),
+ K("After he had read the letter, he burst into tears.","HAVING","___ the letter, he burst into tears.",["having read"],"Having + participio."),
+ K("I've got a friend. Her father is a judge.","WHOSE","I've got a friend ___ a judge.",["whose father is"],"whose = cuyo."),
+ K("He resigned. That surprised everybody.","WHICH","He resigned, ___ everybody.",["which surprised"],"which = lo cual."),
+ E("My brother, *that* works in a bank, is getting married.","My brother, who works in a bank, is getting married.","Explicativa: nunca that."),
+ E("This is the house where I was born *in*.","This is the house where I was born.","where ya incluye la preposición."),
+ E("I don't understand *that* you mean.","I don't understand what you mean.","lo que = what."),
+ O("La chica cuyo padre es médico vive aquí.","The girl whose father is a doctor lives here",["who","which"],"whose."),
+ O("Al abrir la puerta, vio a un hombre.","Opening the door he saw a man",["opened","when"],"Participio presente."),
+ O("Ese es el pueblo donde crecí.","That is the village where I grew up",["which","grow"],"where."),
+ W("Lo que necesito son unas vacaciones.",["What I need is a holiday","What I need is a vacation","What I need is a break"],"What I need is…"),
+ W("El hombre que vive al lado es médico.",["The man who lives next door is a doctor","The man that lives next door is a doctor"],"who / that."),
+ H("The people I work with are very friendly","La gente con la que trabajo es muy simpática.",["who","whom"]),
+ H("Having lost his keys he had to call a locksmith","Tras perder las llaves, tuvo que llamar a un cerrajero.",["lose","losing"]),
+ P([["who","personas"],["which","cosas"],["whose","posesión (cuyo)"],["where","lugares"],["when","momentos"]])
+ ]},
+/* 9 */
+{title:"Conectores y contraste",can:"Enlazar ideas para contrastar, explicar causas, consecuencias y finalidad.",
+ key:"<b>although / even though</b> + frase; <b>despite / in spite of</b> + nombre o -ing (o <i>the fact that</i>). <b>However</b> entre frases. <b>whereas / while</b>: contraste. <b>so that</b> + frase; <b>in order to / so as to</b> + infinitivo. <b>due to / owing to</b> + nombre. <b>as a result, therefore</b>: consecuencia.",
+ items:[
+ G("___ the rain, we went for a walk.",["Despite","Although","However"],"despite + nombre."),
+ G("___ it was raining, we went for a walk.",["Although","Despite","In spite of"],"although + frase."),
+ G("In spite ___ feeling ill, she went to work.",["of","the","that"],"in spite of + -ing."),
+ G("I'd love to come. ___, I have to work.",["However","Although","Despite"],"However entre frases."),
+ G("I like coffee, ___ my wife prefers tea.",["whereas","despite","so that"],"whereas = mientras que."),
+ G("I'm saving money ___ I can buy a flat.",["so that","in order to","for"],"so that + frase."),
+ G("She went to London ___ improve her English.",["in order to","so that","for"],"in order to + infinitivo."),
+ G("The flight was delayed ___ bad weather.",["due to","because","since"],"due to + nombre."),
+ G("He didn't study; ___, he failed.",["as a result","whereas","despite"],"Consecuencia."),
+ G("___ you're here, can you help me with this?",["Since","Despite","Unless"],"since = ya que."),
+ G("___ hard he tries, he never wins.",["However","Although","Whatever"],"However + adjetivo/adverbio = por mucho que."),
+ M("¿Cuál es correcta?",["Despite the fact that he was tired, he kept working.","Despite he was tired, he kept working.","Despite of being tired, he kept working."],"despite the fact that + frase."),
+ M("\"Even if\" significa…",["Incluso si","Aunque (es un hecho)","Ni siquiera"],"even if = hipótesis; even though = hecho."),
+ M("¿Cuál expresa finalidad negativa correctamente?",["Take a map so as not to get lost.","Take a map in order not getting lost.","Take a map for not get lost."],"so as not to / in order not to."),
+ OC("___ though she earns a lot, she never spends any money.",["Even"],"even though = aunque."),
+ OC("I'll take an umbrella ___ case it rains.",["in"],"in case = por si."),
+ OC("Not ___ did he lie, but he also stole the money.",["only"],"Not only … but also."),
+ K("Although it was cold, we swam in the sea.","DESPITE","We swam in the sea ___ cold.",["despite it being","despite the fact that it was"],"despite + -ing / the fact that."),
+ K("I left early because I wanted to avoid the traffic.","SO","I left early ___ the traffic.",["so as to avoid","so that I could avoid","so I could avoid","so that I would avoid"],"so as to / so that."),
+ K("The match was cancelled because of the snow.","DUE","The match was cancelled ___ the snow.",["due to"],"due to."),
+ K("He's very rich, but he isn't happy.","SPITE","In ___ rich, he isn't happy.",["spite of being","spite of the fact that he is"],"in spite of + -ing."),
+ E("*Despite* it was late, they kept talking.","Although it was late, they kept talking.","Delante de una frase: although."),
+ E("She studied hard *for* pass the exam.","She studied hard to pass the exam.","Finalidad: to / in order to + infinitivo."),
+ E("I enjoyed the film. *Although*, it was too long.","I enjoyed the film. However, it was too long.","Entre frases: However."),
+ O("A pesar de la lluvia, el concierto fue un éxito.","Despite the rain the concert was a success",["although","of"],"despite + nombre."),
+ O("Habla bajo para no despertar al bebé.","Speak quietly so as not to wake the baby",["for","don't"],"so as not to."),
+ O("A él le gusta el mar, mientras que ella prefiere la montaña.","He likes the sea whereas she prefers the mountains",["despite","although"],"whereas."),
+ W("Aunque estaba cansado, siguió trabajando.",["Although he was tired he kept working","Although he was tired he kept on working","Although he was tired he continued working","Although he was tired he carried on working","Although he was tired he went on working","Even though he was tired he kept working"],"although + frase."),
+ W("Lo hice para ayudarte.",["I did it to help you","I did it in order to help you","I did it so as to help you"],"to + infinitivo."),
+ H("Despite being tired she finished the race","A pesar de estar cansada, terminó la carrera.",["although","tire"]),
+ H("He left early so that he could catch the train","Salió temprano para poder coger el tren.",["for","can"]),
+ P([["although","aunque"],["whereas","mientras que"],["therefore","por lo tanto"],["moreover","además"],["nevertheless","aun así"]])
+ ]},
+/* 10 */
+{title:"Phrasal verbs B2",can:"Entender y usar los phrasal verbs que aparecen en conversaciones y exámenes de nivel B2.",
+ key:"Muchos son <b>separables</b>: con pronombre, este va en medio (<i>turn it down</i>, nunca <i>turn down it</i>). Otros no se separan (<i>look after him, run into her</i>). Algunos tienen tres partes: <i>put up with, come up with, run out of, cut down on</i>.",
+ items:[
+ G("I can't ___ up with this noise any longer.",["put","get","make"],"put up with = soportar."),
+ G("The meeting was ___ off because the boss was ill.",["called","put","taken"],"call off = cancelar."),
+ G("She ___ after her mother; they're very similar.",["takes","looks","gets"],"take after = parecerse a."),
+ G("We need to come up ___ a better plan.",["with","for","to"],"come up with = idear."),
+ G("I ran ___ an old friend in the supermarket.",["into","over","across from"],"run into = encontrarse con."),
+ G("The plane took ___ two hours late.",["off","up","out"],"take off = despegar."),
+ G("Could you ___ me up at the airport?",["pick","take","get"],"pick up = recoger."),
+ G("Our car broke ___ on the motorway.",["down","up","out"],"break down = averiarse."),
+ G("I've decided to take ___ yoga.",["up","on","over"],"take up = empezar (una afición)."),
+ G("The fire alarm went ___ in the middle of the night.",["off","out","on"],"go off = sonar (alarma), explotar."),
+ G("She turned ___ the job offer because the salary was too low.",["down","off","out"],"turn down = rechazar."),
+ G("Please fill ___ this form.",["in","on","up"],"fill in = rellenar."),
+ G("It turned ___ that he had been lying all along.",["out","up","over"],"turn out = resultar."),
+ M("¿Cuál es correcta?",["The music was too loud, so I turned it down.","The music was too loud, so I turned down it.","The music was too loud, so I down turned it."],"Separable: pronombre en medio."),
+ M("\"To look into something\" significa…",["Investigar algo","Mirar dentro de algo","Despreciar algo"],"look into = investigar."),
+ M("\"We've run out of coffee\" significa…",["Se nos ha acabado el café","Hemos tirado el café","Hemos salido a por café"],"run out of = quedarse sin."),
+ OC("I don't get ___ with my neighbours; we argue a lot.",["on","along"],"get on / along with."),
+ OC("You should cut ___ on sugar.",["down"],"cut down on = reducir."),
+ OC("The police are looking ___ the robbery.",["into"],"look into."),
+ K("They cancelled the concert because of the storm.","CALLED","The concert ___ because of the storm.",["was called off"],"call off en pasiva."),
+ K("I can't tolerate his rudeness any more.","PUT","I can't ___ his rudeness any more.",["put up with"],"put up with."),
+ K("She resembles her father.","TAKES","She ___ father.",["takes after her"],"take after."),
+ K("I met Laura by chance yesterday.","RAN","I ___ yesterday.",["ran into Laura"],"run into."),
+ E("If you don't know the word, look up *it* in the dictionary.","If you don't know the word, look it up in the dictionary.","Separable con pronombre: look it up."),
+ E("Can you look *for* my dog while I'm away?","Can you look after my dog while I'm away?","cuidar = look after."),
+ E("The bomb went *out* in the city centre.","The bomb went off in the city centre.","explotar = go off."),
+ O("Tenemos que posponer la reunión.","We have to put off the meeting",["out","delay"],"put off."),
+ O("Se me ha ocurrido una idea genial.","I have come up with a great idea",["for","got"],"come up with."),
+ O("No me llevo bien con mi jefe.","I don't get on with my boss",["take","by"],"get on with."),
+ W("Se nos ha acabado la leche.",["We have run out of milk","We ran out of milk"],"run out of."),
+ W("El avión despegó tarde.",["The plane took off late"],"take off."),
+ H("I need to sort out a few problems","Tengo que solucionar algunos problemas.",["short","of"]),
+ H("They brought up four children","Criaron a cuatro hijos.",["bring","rose"]),
+ P([["give in","ceder, rendirse"],["break up","romper (una pareja)"],["show off","presumir"],["work out","entrenar / resolver"],["set up","montar, fundar"]]),
+ P([["carry on","continuar"],["put out","apagar (un fuego)"],["get over","superar"],["let down","decepcionar"],["make up","inventar / reconciliarse"]])
+ ]},
+/* 11 */
+{title:"Colocaciones y falsos amigos",can:"Combinar las palabras como lo hace un nativo y evitar las trampas típicas para hispanohablantes.",
+ key:"<b>make</b>: crear o producir (a mistake, a decision, money, an effort, a complaint). <b>do</b>: tareas (homework, business, a favour, your best). <b>take</b>: a break, a risk, part, advantage. Falsos amigos: <i>actually</i> = en realidad; <i>eventually</i> = al final; <i>sensible</i> = sensato; <i>embarrassed</i> = avergonzado; <i>attend</i> = asistir; <i>library</i> = biblioteca; <i>lend</i> = prestar.",
+ items:[
+ G("I made a terrible ___ in the exam.",["mistake","fault","failure"],"make a mistake."),
+ G("Could you ___ me a favour?",["do","make","give"],"do sb a favour."),
+ G("We need to ___ a decision today.",["make","do","put"],"make a decision."),
+ G("Let's ___ a break; we've been working for hours.",["take","do","make"],"take a break."),
+ G("He ___ part in the competition last year.",["took","made","did"],"take part in."),
+ G("She ___ her best, but she didn't win.",["did","made","took"],"do your best."),
+ G("I'd like to ___ an appointment with the doctor.",["make","do","take"],"make an appointment."),
+ G("He was so ___ when he fell over in front of everyone.",["embarrassed","pregnant","embarrassing"],"embarrassed = avergonzado (pregnant = embarazada)."),
+ G("It was a very ___ decision; I agree with you.",["sensible","sensitive","sensational"],"sensible = sensato."),
+ G("He thought it was easy, but ___ it was very difficult.",["actually","currently","eventually"],"actually = en realidad."),
+ G("After many years, they ___ got married.",["eventually","actually","possibly"],"eventually = al final."),
+ G("I need to ___ the meeting at ten.",["attend","assist","assist to"],"attend = asistir a."),
+ G("She's a ___ smoker; she smokes forty a day.",["heavy","strong","big"],"heavy smoker."),
+ G("There was ___ traffic on the way here.",["heavy","strong","big"],"heavy traffic."),
+ M("\"Career\" significa…",["Trayectoria profesional","Carrera universitaria","Carrera deportiva"],"Carrera universitaria = degree; carrera deportiva = race."),
+ M("\"I'm constipated\" significa…",["Estoy estreñido","Estoy resfriado","Estoy acatarrado"],"Resfriado = I have a cold."),
+ M("¿Qué colocación es correcta?",["make a complaint","do a complaint","take a complaint"],"make a complaint."),
+ OC("I don't want to ___ the risk of losing everything.",["take","run"],"take / run a risk."),
+ OC("We must ___ advantage of this opportunity.",["take"],"take advantage of."),
+ OC("Have you ___ your homework yet?",["done","finished"],"do homework."),
+ K("I'm sorry, I was wrong.","MISTAKE","I'm sorry, I ___.",["made a mistake"],"make a mistake."),
+ K("Can you help me?","FAVOUR","Can you ___?",["do me a favour","do me a favor"],"do sb a favour."),
+ K("In the end, we found the hotel.","EVENTUALLY","We ___ the hotel.",["eventually found"],"eventually = in the end."),
+ K("She's participating in a marathon.","PART","She's ___ a marathon.",["taking part in"],"take part in."),
+ E("I went to the *library* to buy a book.","I went to the bookshop to buy a book.","librería = bookshop; library = biblioteca."),
+ E("Can you *borrow* me your pen?","Can you lend me your pen?","prestar = lend; pedir prestado = borrow."),
+ E("The government has decided to *rise* taxes.","The government has decided to raise taxes.","raise algo; rise = subir (solo)."),
+ O("En realidad no me gusta el café.","Actually I don't like coffee",["currently","eventually"],"actually = en realidad."),
+ O("Tienes que tomar una decisión.","You have to make a decision",["take","do"],"make a decision."),
+ O("Asistí a una conferencia muy interesante.","I attended a very interesting conference",["assisted","to"],"attend."),
+ W("Ella me prestó su coche.",["She lent me her car","She lent her car to me"],"lend."),
+ W("Él hizo todo lo posible.",["He did his best","He did everything he could","He did everything possible"],"do one's best."),
+ H("I need to make a phone call","Tengo que hacer una llamada.",["do","take"]),
+ H("She is very sensitive to criticism","Es muy sensible a las críticas.",["sensible","critics"]),
+ P([["actually","en realidad"],["eventually","al final"],["sensible","sensato"],["embarrassed","avergonzado"],["realise","darse cuenta"]]),
+ P([["make","a mistake / money"],["do","homework / a favour"],["take","a break / a risk"],["pay","attention / a visit"],["keep","a promise / a secret"]])
+ ]},
+/* 12 */
+{title:"Formación de palabras",can:"Transformar palabras con prefijos y sufijos, como en la parte 3 del First.",
+ key:"Nombres: <b>-ment, -tion, -ness, -ity, -ance/-ence, -age</b>. Adjetivos: <b>-ful, -less, -ous, -able, -ive, -al, -ic</b>. Contrarios: <b>un-, in-, im-</b> (delante de p/m), <b>ir-</b> (r), <b>il-</b> (l), <b>dis-, mis-</b>. Adverbios: <b>-ly</b>. Verbos: <b>-en, -ise</b>. Adjetivos en <b>-ed</b> (cómo te sientes) y <b>-ing</b> (cómo es algo).",
+ items:[
+ WF("Her ___ to the team has been fantastic.","CONTRIBUTE",["contribution"],"Nombre: -tion."),
+ WF("It's ___ to drive in this fog.","DANGER",["dangerous"],"Adjetivo: -ous."),
+ WF("The instructions were completely ___; I couldn't follow them.","HELP",["unhelpful"],"un- + help + -ful."),
+ WF("I'm afraid your answer is ___.","CORRECT",["incorrect"],"Contrario: in-."),
+ WF("He refused to take ___ for the accident.","RESPONSIBLE",["responsibility"],"Nombre: -ity."),
+ WF("She spoke very ___ about her experience.","EMOTION",["emotionally"],"Adverbio: -al + -ly."),
+ WF("The ___ of the new road took three years.","CONSTRUCT",["construction"],"Nombre: -tion."),
+ WF("It's ___ to park here; you'll get a fine.","LEGAL",["illegal"],"il- delante de l."),
+ WF("Your plan will never work; it's totally ___.","REAL",["unrealistic"],"un- + real + -istic."),
+ WF("We need to ___ the road; it's too narrow.","WIDE",["widen"],"Verbo: -en."),
+ WF("There's a ___ of nurses in the hospital.","SHORT",["shortage"],"Nombre: -age."),
+ WF("I was very ___ with the hotel; it was dirty.","APPOINT",["disappointed"],"dis- + -ed."),
+ WF("The film was so ___ that I fell asleep.","BORE",["boring"],"-ing: describe cómo es algo."),
+ WF("You can't trust him. He's very ___.","HONEST",["dishonest"],"Contrario: dis-."),
+ WF("Thank you for your ___.","KIND",["kindness"],"Nombre: -ness."),
+ WF("He's very ___ about his chances of winning.","OPTIMISM",["optimistic"],"Adjetivo: -istic."),
+ WF("The ___ of the city has doubled in 20 years.","POPULATE",["population"],"Nombre: -tion."),
+ WF("I ___ the distance; it was much further than I thought.","ESTIMATE",["underestimated"],"under- = de menos."),
+ WF("Her ___ to speak five languages impressed everyone.","ABLE",["ability"],"able → ability."),
+ WF("It was a ___ performance; everyone loved it.","MEMORY",["memorable"],"Adjetivo: -able."),
+ WF("Youth ___ is a serious problem in many countries.","EMPLOY",["unemployment"],"un- + employ + -ment."),
+ WF("The doctor gave me some useful ___ about my diet.","ADVISE",["advice"],"Nombre: advice (verbo: advise)."),
+ WF("___, nobody was injured in the accident.","FORTUNE",["Fortunately"],"Adverbio: -ate + -ly."),
+ WF("We had a long ___ about politics.","DISCUSS",["discussion"],"Nombre: -ion."),
+ WF("Please don't be so ___; the baby is sleeping.","NOISE",["noisy"],"Adjetivo: -y."),
+ G("The film was really ___. I loved it.",["entertaining","entertained","entertainment"],"-ing describe cómo es algo."),
+ G("I was really ___ by the news.",["shocked","shocking","shock"],"-ed: cómo se siente la persona."),
+ G("We need a ___ solution to this problem.",["practical","practise","practically"],"Adjetivo delante del nombre."),
+ G("She drives very ___.",["carefully","careful","carefulness"],"Adverbio: -ly."),
+ M("¿Cuál es el contrario de \"patient\"?",["impatient","unpatient","dispatient"],"im- delante de p."),
+ M("¿Cuál es el contrario de \"responsible\"?",["irresponsible","unresponsible","inresponsible"],"ir- delante de r."),
+ M("¿Cuál es el nombre de \"decide\"?",["decision","decidement","decidity"],"decide → decision."),
+ E("The weather was *unpredictible* last week.","The weather was unpredictable last week.","-able, no -ible."),
+ E("His *explaination* was not clear.","His explanation was not clear.","explain → explanation."),
+ E("She has a lot of *knowledges* about history.","She has a lot of knowledge about history.","knowledge es incontable."),
+ H("Her performance was absolutely unforgettable","Su actuación fue absolutamente inolvidable.",["forget","unforgotten"]),
+ H("The success of the project depends on everyone","El éxito del proyecto depende de todos.",["succeed","from"]),
+ P([["happy","happiness"],["develop","development"],["possible","possibility"],["important","importance"],["free","freedom"]]),
+ P([["un-","unknown"],["dis-","disagree"],["mis-","misunderstand"],["over-","overcook"],["re-","rewrite"]])
+ ]},
+/* 13 */
+{title:"Inversión y énfasis",can:"Dar énfasis con inversiones y frases hendidas, un rasgo típico del inglés B2 alto.",
+ key:"Tras expresiones negativas al principio, el auxiliar va antes del sujeto: <i>Never have I seen…, Not only did he…, Hardly had I… when, No sooner had I… than, Under no circumstances should you…, Little did I know…</i> Frases hendidas: <i>It was Tom who…, What I need is…, All I want is…</i> <b>do</b> enfático: <i>I do like it.</i>",
+ items:[
+ G("Never ___ such a beautiful sunset.",["have I seen","I have seen","I saw"],"Never al principio → inversión."),
+ G("Not only ___ late, but he also forgot the tickets.",["was he","he was","he did"],"Not only + inversión."),
+ G("Hardly had we sat down ___ the music started.",["when","than","that"],"Hardly … when."),
+ G("No sooner had I arrived ___ it started to rain.",["than","when","then"],"No sooner … than."),
+ G("Under no circumstances ___ open this door.",["should you","you should","you shouldn't"],"Under no circumstances + inversión."),
+ G("Only later ___ that he had lied.",["did I realise","I realised","I did realise"],"Only later + inversión."),
+ G("It was my brother ___ broke the window, not me.",["who","which","what"],"Frase hendida: It was … who."),
+ G("___ I need right now is a long holiday.",["What","That","Which"],"What I need is…"),
+ G("Little ___ know what was going to happen.",["did they","they did","they"],"Little did they know."),
+ G("Rarely ___ a film so moving.",["have I seen","I have seen","seen I have"],"Rarely + inversión."),
+ G("All I want ___ some peace and quiet.",["is","are","be"],"All I want is…"),
+ G("I ___ like your new haircut! It really suits you.",["do","am","have"],"do enfático."),
+ M("¿Cuál es correcta?",["Not until I got home did I notice the stain.","Not until I got home I noticed the stain.","Not until did I get home I noticed the stain."],"Not until + frase, luego inversión."),
+ M("¿Qué frase pone el énfasis en \"the price\"?",["It was the price that surprised me.","The price surprised me.","Surprised me the price."],"Frase hendida: It was … that."),
+ M("¿Cuál es correcta?",["Seldom does she complain.","Seldom she complains.","Seldom complains she."],"Seldom + does + sujeto."),
+ OC("Not ___ did she apologise, but she also paid for the damage.",["only"],"Not only."),
+ OC("At no time ___ I say that I would help you.",["did"],"At no time + did."),
+ OC("It ___ in 1992 that they first met.",["was"],"Frase hendida con fecha."),
+ K("I have never been so insulted.","NEVER","___ so insulted.",["Never have I been"],"Inversión."),
+ K("As soon as he arrived, the phone rang.","SOONER","No ___ than the phone rang.",["sooner had he arrived"],"No sooner had … than."),
+ K("You mustn't tell anyone under any circumstances.","NO","Under ___ tell anyone.",["no circumstances must you","no circumstances should you"],"Under no circumstances + inversión."),
+ K("I only need a cup of tea.","ALL","___ a cup of tea.",["All I need is"],"All I need is…"),
+ E("Never *I* *have* heard such nonsense.","Never have I heard such nonsense.","Inversión: el auxiliar va antes del sujeto."),
+ E("Not only *she* *sings*, but she also dances.","Not only does she sing, but she also dances.","Not only + does + sujeto."),
+ E("What I need *are* a good night's sleep.","What I need is a good night's sleep.","What … + is."),
+ O("Nunca había visto tanta gente.","Never had I seen so many people",["have","much"],"Inversión con past perfect."),
+ O("Fue Marta quien me lo dijo.","It was Marta who told me",["which","said"],"Frase hendida."),
+ O("Lo que más me gusta es viajar.","What I like most is travelling",["that","travel"],"What … is + -ing."),
+ W("Lo único que quiero es dormir.",["All I want is to sleep","All I want to do is sleep","All I want is sleep","The only thing I want is to sleep"],"All I want is…"),
+ W("Nunca he estado tan feliz.",["Never have I been so happy","I have never been so happy","I have never been happier"],"Prueba la inversión: Never have I been…"),
+ H("Not only did he win but he also broke the record","No solo ganó, sino que además batió el récord.",["won","does"]),
+ H("Little did I know what was about to happen","Poco sabía yo lo que estaba a punto de pasar.",["knew","less"]),
+ P([["Never have I…","Nunca he…"],["Not only… but also","No solo… sino también"],["Hardly… when","Apenas… cuando"],["No sooner… than","Nada más… cuando"],["Little did I know","Poco sabía yo"]])
+ ]}
+];
+
 /* ---------- icons ---------- */
 const I={
  fire:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3.5 5.5 6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.4 1.2-4 2.4-5.2.2 1.7 1 2.7 2.1 3.2C10.6 8.5 11 5 12 2z"/></svg>',
@@ -227,162 +750,54 @@ const I={
  check:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
  lock:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
  star:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>',
- play:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+ cap:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1 9l11 6 9-4.9V17h2V9z"/><path d="M5 13.2V17c0 1.7 3.1 3 7 3s7-1.3 7-3v-3.8l-7 3.8z"/></svg>',
+ shuffle:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3.5c2 0 3.2.9 4.3 2.6l2.4 4.8c1 1.7 2.3 2.6 4.3 2.6H21M3 17h3.5c1.3 0 2.3-.4 3.1-1.2M14.4 8.2c.8-.8 1.8-1.2 3.1-1.2H21M18 4l3 3-3 3M18 14l3 3-3 3"/></svg>',
  speaker:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>',
  turtle:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 15a8 6 0 0 1 16 0z" fill="currentColor" fill-opacity=".25"/><path d="M20 15h2M6 15l-1 3M18 15l1 3M20 12a2 2 0 1 1 2-2"/></svg>',
  flag:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>',
  x:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
 };
 
-/* ---------- content ---------- */
-const G=(s,o,tip)=>({t:'gap',s,o,tip});            // o[0] es la correcta
-const M=(q,o,tip)=>({t:'mc',q,o,tip});              // o[0] es la correcta
-const O=(es,en,extra,tip)=>({t:'order',es,en,extra,tip});
-const W=(es,ans,tip)=>({t:'write',es,ans,tip});
-const H=(en,es,extra)=>({t:'listen',en,es,extra});
-const P=pairs=>({t:'match',pairs});
-
-const UNITS=[
-{title:"Experiencias de vida",can:"Hablar de lo que has hecho alguna vez y de lo que pasó en un momento concreto.",
- key:"<b>Present perfect</b> (have + participio) para experiencias sin fecha y acciones que siguen: <i>I have been to London</i>. <b>Past simple</b> con momento terminado: <i>yesterday, last year, in 2019</i>. <b>for</b> + duración, <b>since</b> + punto de inicio.",
- items:[
- G("I ___ to London twice in my life.",["have been","went","was"],"Experiencia sin momento concreto: present perfect."),
- G("We ___ that film last night.",["saw","have seen","see"],"\"Last night\" es un momento terminado: past simple."),
- G("She ___ here since 2019.",["has worked","worked","works"],"Con since/for y una acción que continúa se usa present perfect."),
- G("Have you ever ___ paella?",["eaten","ate","eat"],"Detrás de have va el participio: eat → ate → eaten."),
- G("How long ___ you known him?",["have","did","do"],"How long + present perfect para algo que dura hasta hoy."),
- M("¿Cuál es correcta?",["I finished my homework yesterday.","I have finished my homework yesterday.","I have finish my homework yesterday."],"Con yesterday nunca present perfect."),
- O("Nunca he estado en Nueva York.","I have never been to New York",["was","ever"],"never va entre have y el participio."),
- O("¿Ya has terminado el informe?","Have you finished the report yet",["did","already"],"yet va al final en preguntas y negativas."),
- P([["already","ya"],["yet","todavía / aún"],["ever","alguna vez"],["since","desde"],["just","acabar de"]]),
- W("Ella acaba de llegar.",["she has just arrived","she's just arrived","she just arrived"],"acabar de = have just + participio."),
- H("I have lived here for ten years","He vivido aquí durante diez años.",["since","live"])
- ]},
-{title:"Recuerdos del pasado",can:"Contar historias, describir lo que estaba pasando y hablar de costumbres antiguas.",
- key:"<b>Past continuous</b> (was/were + -ing) para la acción en curso: <i>I was having a shower when…</i>. <b>used to</b> para costumbres pasadas; con did se escribe <b>use to</b>: <i>Did you use to…?</i>",
- items:[
- G("I ___ a shower when the phone rang.",["was having","had","have had"],"La acción larga en curso va en past continuous; la que interrumpe, en past simple."),
- G("When I was a child, I ___ play football every day.",["used to","use to","was used to"],"Costumbre pasada: used to + infinitivo."),
- G("Did you ___ live in Madrid?",["use to","used to","using to"],"Con did, el verbo vuelve a la forma base: use to."),
- G("While they ___ dinner, the lights went out.",["were having","had","have"],"While suele ir con past continuous."),
- G("What ___ you doing at eight o'clock last night?",["were","did","was"],"you → were."),
- M("¿Cuál es correcta?",["I didn't use to like coffee.","I didn't used to like coffee.","I not used to like coffee."],"Negativa con didn't + use to."),
- O("Estaba lloviendo cuando salimos.","It was raining when we left",["rained","leave"],"was raining (fondo) + left (acción puntual)."),
- W("Yo solía vivir en Valencia.",["i used to live in valencia"],"soler (en pasado) = used to."),
- P([["go","went"],["buy","bought"],["think","thought"],["catch","caught"],["teach","taught"]]),
- H("We were watching TV when he arrived","Estábamos viendo la tele cuando llegó.",["watched","arrive"])
- ]},
-{title:"Planes y predicciones",can:"Hablar de planes, citas, predicciones y decisiones sobre el futuro.",
- key:"<b>going to</b>: plan decidido o predicción con evidencia. <b>will</b>: decisión del momento, promesas, opiniones (<i>I think…</i>). <b>Present continuous</b>: citas ya organizadas. <b>Present simple</b>: horarios. Tras <b>when / if</b> no se usa will.",
- items:[
- G("Look at those clouds! It ___ rain.",["is going to","will","is raining"],"Predicción con evidencia visible: going to."),
- G("\"I'm so tired.\" \"Don't worry, I ___ cook tonight.\"",["will","am going to","cook"],"Decisión tomada en el momento: will."),
- G("We ___ our grandparents on Saturday. It's all arranged.",["are visiting","will visit","visit"],"Cita organizada: present continuous."),
- G("The train ___ at 7:45 tomorrow morning.",["leaves","will leaving","is leave"],"Horarios oficiales: present simple."),
- G("I'll phone you when I ___ to the hotel.",["get","will get","am going to get"],"Después de when no va will."),
- M("¿Qué expresa \"I'm going to study medicine\"?",["Un plan o intención ya decidido","Una decisión tomada en ese momento","Un horario oficial"],"going to = intención previa."),
- O("Creo que ella aprobará el examen.","I think she will pass the exam",["going","passes"],"Opinión sobre el futuro: I think + will."),
- W("Voy a comprar un coche nuevo.",["i am going to buy a new car","i'm going to buy a new car"],"Ir a + infinitivo = be going to."),
- P([["appointment","cita (médico, etc.)"],["booking","reserva"],["deadline","fecha límite"],["meeting","reunión"],["schedule","horario / agenda"]]),
- H("I will call you when I get home","Te llamaré cuando llegue a casa.",["will get","calling"])
- ]},
-{title:"Si… entonces",can:"Expresar condiciones reales e imaginarias y dar consejos.",
- key:"<b>Zero</b>: if + presente, presente (verdades). <b>First</b>: if + presente, will (posible). <b>Second</b>: if + pasado, would (imaginario). <i>If I were you, I would…</i> para aconsejar. <b>unless</b> = if not.",
- items:[
- G("If it ___ tomorrow, we'll stay at home.",["rains","will rain","rained"],"First conditional: if + presente, will."),
- G("If I ___ more money, I would travel around the world.",["had","have","would have"],"Second conditional: if + pasado, would."),
- G("If I were you, I ___ accept that job.",["would","will","am"],"If I were you + would para aconsejar."),
- G("If you heat ice, it ___.",["melts","would melt","melted"],"Verdad general (zero conditional): presente + presente."),
- G("Unless you hurry, you ___ miss the bus.",["will","would","are"],"unless = if not, funciona como el first conditional."),
- M("¿Cuál es correcta?",["If I knew the answer, I would tell you.","If I would know the answer, I would tell you.","If I know the answer, I would tell you."],"Nunca would detrás de if."),
- O("Si tuviera tiempo, aprendería a tocar la guitarra.","If I had time I would learn to play the guitar",["have","will"],"Situación imaginaria: had + would."),
- W("Si llueve, no iremos a la playa.",["if it rains we will not go to the beach","if it rains we won't go to the beach","we will not go to the beach if it rains","we won't go to the beach if it rains"],"Condición posible: if + presente, will."),
- P([["unless","a menos que"],["as long as","siempre que"],["in case","por si acaso"],["otherwise","si no, de lo contrario"],["even if","incluso si"]]),
- H("If you study hard you will pass","Si estudias mucho, aprobarás.",["studied","would"])
- ]},
-{title:"Obligaciones y comparaciones",can:"Hablar de normas, consejos, posibilidades y comparar cosas.",
- key:"<b>must</b> / <b>have to</b>: obligación. <b>mustn't</b>: prohibido. <b>don't have to</b>: no es necesario. <b>should</b>: consejo. <b>might</b>: posibilidad. Comparativos: <i>-er than / more … than</i>, <i>as … as</i>; superlativos: <i>the -est / the most</i>.",
- items:[
- G("You ___ smoke in the hospital. It's forbidden.",["mustn't","don't have to","shouldn't to"],"Prohibición: mustn't."),
- G("Tomorrow is Sunday, so I ___ get up early.",["don't have to","mustn't","haven't"],"No es necesario: don't have to."),
- G("You look tired. You ___ go to bed earlier.",["should","must to","ought"],"Consejo: should + infinitivo sin to."),
- G("She isn't answering. She ___ be busy.",["might","must to","can to"],"Posibilidad: might."),
- G("This hotel is ___ than the one we stayed in last year.",["more comfortable","comfortabler","most comfortable"],"Adjetivos largos: more … than."),
- G("It's the ___ film I've ever seen.",["worst","baddest","worse"],"bad → worse → the worst."),
- M("¿Qué significa \"You don't have to come\"?",["No es necesario que vengas","No debes venir","No puedes venir"],"don't have to ≠ mustn't."),
- O("Mi hermano no es tan alto como yo.","My brother is not as tall as me",["than","so"],"tan … como = as … as."),
- W("Deberías hablar con tu jefe.",["you should talk to your boss","you should speak to your boss","you should talk with your boss","you should speak with your boss"],"deberías = should."),
- H("You should see a doctor","Deberías ir al médico.",["must","seeing"])
- ]},
-{title:"Phrasal verbs del día a día",can:"Entender y usar los phrasal verbs más frecuentes en conversaciones normales.",
- key:"Un phrasal verb es verbo + partícula con un significado nuevo: <i>look after</i> (cuidar), <i>run out of</i> (quedarse sin), <i>put off</i> (posponer). <b>look forward to</b> va seguido de <b>-ing</b>.",
- items:[
- P([["give up","dejar de, rendirse"],["look for","buscar"],["turn down","rechazar"],["find out","averiguar"],["get on with","llevarse bien con"]]),
- P([["pick up","recoger"],["run out of","quedarse sin"],["put off","posponer"],["look after","cuidar"],["set off","salir de viaje"]]),
- G("I've ___ up sugar and I feel much better.",["given","gave","put"],"give up = dejar un hábito. Participio: given."),
- G("We've run ___ of milk. Can you buy some?",["out","off","away"],"run out of = quedarse sin."),
- G("Could you look ___ my cat while I'm on holiday?",["after","for","at"],"look after = cuidar."),
- G("The meeting has been put ___ until next week.",["off","out","on"],"put off = aplazar."),
- M("I'm looking forward to ___ you.",["seeing","see","saw"],"look forward to + -ing."),
- O("Tengo que averiguar a qué hora sale el tren.","I have to find out what time the train leaves",["discover","leave"],"En preguntas indirectas no se invierte el orden."),
- W("Ella rechazó la oferta.",["she turned down the offer","she turned the offer down","she rejected the offer","she refused the offer"],"turn down = rechazar."),
- H("Can you pick me up at the station","¿Puedes recogerme en la estación?",["take","in"])
- ]},
-{title:"La voz pasiva",can:"Describir procesos, noticias y hechos cuando importa más la acción que quién la hace.",
- key:"Pasiva = <b>be</b> + participio. El tiempo lo marca <i>be</i>: <i>is spoken, was built, will be published, is being repaired, have been arrested</i>. Quien hace la acción va con <b>by</b>.",
- items:[
- G("This bridge ___ in 1890.",["was built","built","has built"],"Pasiva en pasado: was + participio."),
- G("English ___ all over the world.",["is spoken","speaks","is speaking"],"Pasiva en presente: is + participio."),
- G("The results ___ next Monday.",["will be published","will publish","are publishing"],"Pasiva en futuro: will be + participio."),
- G("My car ___ repaired at the moment.",["is being","is been","has being"],"En curso: is being + participio."),
- G("Three people ___ been arrested.",["have","has","are"],"Sujeto plural: have been."),
- M("Pasiva de \"Someone stole my wallet\":",["My wallet was stolen.","My wallet stole.","My wallet has stolen."],"was + stolen."),
- O("La carta fue escrita por mi abuelo.","The letter was written by my grandfather",["wrote","from"],"Agente con by."),
- W("El museo fue construido en 1990.",["the museum was built in 1990"],"build → built."),
- P([["write","written"],["speak","spoken"],["build","built"],["steal","stolen"],["choose","chosen"]]),
- H("The windows are cleaned every week","Las ventanas se limpian cada semana.",["clean","was"])
- ]},
-{title:"Quién, dónde y qué dijo",can:"Dar detalles con oraciones de relativo y contar lo que otra persona dijo.",
- key:"Relativos: <b>who</b> (personas), <b>which/that</b> (cosas), <b>where</b> (lugares), <b>whose</b> (posesión). Estilo indirecto: el verbo retrocede un tiempo: <i>\"I am tired\" → She said she was tired</i>; <i>will → would</i>. <b>tell</b> lleva persona; <b>say</b>, no.",
- items:[
- G("That's the man ___ helped me yesterday.",["who","which","whose"],"Personas: who."),
- G("This is the book ___ I told you about.",["that","who","where"],"Cosas: that / which."),
- G("That's the restaurant ___ we had our first date.",["where","which","who"],"Lugares: where."),
- G("I have a friend ___ father is a pilot.",["whose","who's","which"],"Posesión: whose."),
- G("She said that she ___ tired.",["was","is being","were"],"Estilo indirecto: am/is → was."),
- G("He told me he ___ call me later.",["would","will","wills"],"will → would."),
- M("\"I live in Paris,\" she said. →",["She said she lived in Paris.","She said me she lived in Paris.","She told she lived in Paris."],"say sin persona; tell con persona."),
- O("Me preguntó dónde trabajaba.","He asked me where I worked",["did","work"],"En preguntas indirectas no hay did."),
- W("Ella dijo que estaba cansada.",["she said that she was tired","she said she was tired","she told me she was tired","she told me that she was tired"],"is → was."),
- H("The woman who lives next door is a doctor","La mujer que vive al lado es médica.",["which","live"])
- ]}
+const LESSONS=[
+ {name:"Calentamiento",k:8,desc:"8 ejercicios para entrar en materia"},
+ {name:"Práctica",k:10,desc:"10 ejercicios variados"},
+ {name:"Ampliación",k:10,desc:"10 ejercicios que aún no has visto"},
+ {name:"Sin opciones",k:12,typed:true,desc:"12 ejercicios, más escritura"},
+ {name:"Examen de unidad",k:12,typed:true,exam:true,desc:"Formato tipo First (B2)"}
 ];
-const LESSONS=[{name:"Primer contacto",k:6},{name:"Práctica",k:8},{name:"Desafío",k:10}];
-const KINDS={gap:"Completa la frase",mc:"Elige la respuesta",order:"Traduce esta frase",write:"Escribe en inglés",listen:"Escribe lo que oyes",match:"Une las parejas"};
-const MAXH=5, REGEN=20*60*1000, KEY='rutaB1.v1';
+const NL=LESSONS.length, MAXH=5, REGEN=20*60*1000, KEY='rutaB2.v1', OLDKEY='rutaB1.v1';
+const TOTAL_ITEMS=UNITS.reduce((a,U)=>a+U.items.length,0);
 
 /* ---------- nube (Supabase) ----------
-   Pega aquí los datos de tu proyecto: Supabase → Project Settings → API.
-   La anon key es pública por diseño; la seguridad la ponen las políticas RLS de la tabla. */
+   Datos de tu proyecto: Supabase → Project Settings → API Keys / Data API.
+   La clave publishable es pública por diseño; la seguridad la ponen las políticas RLS de la tabla. */
 const SUPABASE_URL='https://oehkxtmjjqwzhseqzuvg.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_N4RBrPA6VD_qe0cH-aEHdQ_8miEU_YQ';
 
 /* ---------- state ---------- */
-const DEF=()=>({xp:0,streak:0,best:0,last:null,days:{},prog:UNITS.map(()=>0),hearts:MAXH,heartTs:0,mist:[],unlockAll:false,goal:30});
+const DEF=()=>({v:2,xp:0,streak:0,best:0,last:null,days:{},prog:UNITS.map(()=>0),hearts:MAXH,heartTs:0,mist:[],seen:{},unlockAll:false,goal:30,updated:0});
+function carry(o){const s=DEF();['xp','streak','best','last','days','goal'].forEach(k=>{if(o&&o[k]!=null)s[k]=o[k]});return s}
+function fix(s){s=Object.assign(DEF(),s);while(s.prog.length<UNITS.length)s.prog.push(0);s.prog=s.prog.slice(0,UNITS.length);return s}
 let S=DEF();
-try{const r=localStorage.getItem(KEY);if(r){S=Object.assign(DEF(),JSON.parse(r));while(S.prog.length<UNITS.length)S.prog.push(0)}}catch(e){}
+try{
+  const r=localStorage.getItem(KEY);
+  if(r)S=fix(JSON.parse(r));
+  else{const o=localStorage.getItem(OLDKEY);if(o)S=carry(JSON.parse(o))}
+}catch(e){}
 function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function save(){S.updated=Date.now();saveLocal();schedulePush()}
 
 /* ---------- sincronización ---------- */
-let sb=null,user=null,syncMsg='',syncErr=false,authMsg='',pushT=null;
-const cloudOn=()=>!!(SUPABASE_URL&&SUPABASE_ANON_KEY&&window.supabase);
-function refreshView(){if(tab==='progreso'&&(!L))render();else renderStats()}
+let sb=null,user=null,syncMsg='',syncErr=false,authMsg='',pushT=null,L=null,tab='ruta';
+const cloudOn=()=>!!(SUPABASE_URL&&SUPABASE_ANON_KEY&&!/^__/.test(SUPABASE_URL)&&window.supabase);
+function refreshView(){if(tab==='progreso'&&!L)render();else renderStats()}
 function merge(l,r){
-  r=Object.assign(DEF(),r);const m=Object.assign({},l);
+  r=(r&&r.v===2)?fix(r):Object.assign(carry(r),{updated:0});
+  const m=Object.assign({},l);
   m.xp=Math.max(l.xp,r.xp);
   m.prog=l.prog.map((p,i)=>Math.max(p,r.prog[i]||0));
   m.days=Object.assign({},r.days);for(const k in l.days)m.days[k]=Math.max(l.days[k],m.days[k]||0);
+  m.seen=Object.assign({},r.seen);for(const k in l.seen)m.seen[k]=Math.max(l.seen[k],m.seen[k]||0);
   m.best=Math.max(l.best,r.best);
   if((r.last||'')>(l.last||'')){m.last=r.last;m.streak=r.streak}
   else if(r.last===l.last)m.streak=Math.max(l.streak,r.streak);
@@ -425,108 +840,98 @@ function initCloud(){
   });
   addEventListener('online',()=>{if(user)push()});
 }
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
 const ymd=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const yest=()=>{const d=new Date();d.setDate(d.getDate()-1);return ymd(d)};
 const liveStreak=()=>(S.last===ymd()||S.last===yest())?S.streak:0;
 function refreshHearts(){
   if(S.hearts>=MAXH){S.hearts=MAXH;return}
   const g=Math.floor((Date.now()-S.heartTs)/REGEN);
-  if(g>0){S.hearts=Math.min(MAXH,S.hearts+g);S.heartTs+=g*REGEN;save()}
+  if(g>0){S.hearts=Math.min(MAXH,S.hearts+g);S.heartTs+=g*REGEN;saveLocal()}
 }
 function nextHeartIn(){if(S.hearts>=MAXH)return '';const ms=REGEN-(Date.now()-S.heartTs);const m=Math.max(0,Math.floor(ms/60000)),s=Math.max(0,Math.floor(ms%60000/1000));return m+':'+String(s).padStart(2,'0')}
 function loseHeart(){if(S.hearts>=MAXH)S.heartTs=Date.now();S.hearts=Math.max(0,S.hearts-1)}
-const unitOpen=u=>S.unlockAll||u===0||S.prog[u-1]>=3;
-
-/* ---------- helpers ---------- */
-const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+const unitOpen=u=>S.unlockAll||u===0||S.prog[u-1]>=NL;
 function norm(s){
-  s=s.toLowerCase().replace(/[’‘`]/g,"'");
-  s=s.replace(/\bwon't\b/g,'will not').replace(/\bcan't\b/g,'cannot').replace(/n't\b/g,' not')
+  s=String(s).toLowerCase().replace(/[’‘`´]/g,"'");
+  s=s.replace(/\bwon't\b/g,'will not').replace(/\bcan't\b/g,'cannot').replace(/\bshan't\b/g,'shall not').replace(/n't\b/g,' not')
      .replace(/'m\b/g,' am').replace(/'re\b/g,' are').replace(/'ve\b/g,' have').replace(/'ll\b/g,' will').replace(/'d\b/g,' would')
      .replace(/\bcan not\b/g,'cannot');
+  s=s.replace(/\b(real|recogn|apolog|organ|critic|emphas|summar|memor|special|practi)is(e|ed|es|ing)\b/g,'$1iz$2')
+     .replace(/\bfavour/g,'favor').replace(/\b(cancel|travel)l(ed|ing)\b/g,'$1$2')
+     .replace(/\bwould (been|known|had|gone|seen|done|left|finished|eaten|made|taken|said|told)\b/g,'had $1'); // I'd known = I had known
   return s.replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();
 }
 function lev(a,b){const m=a.length,n=b.length;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+function anyMatch(v,list,tol){
+  const nv=norm(v);
+  for(const a of list)if(norm(a)===nv)return{ok:true,a};
+  if(tol)for(const a of list){const n=norm(a);if(n.length>=7&&lev(nv,n)<=Math.max(1,Math.floor(n.length/18)))return{ok:true,a,typo:true}}
+  return{ok:false,a:list[0]};
+}
+const cap1=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function fill(s,a){const r=s.replace('___',a);return s.startsWith('___')?cap1(r):r}
 let voice=null;
-function pickVoice(){try{const v=speechSynthesis.getVoices();voice=v.find(x=>/en-GB/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}catch(e){}}
 const canSpeak='speechSynthesis' in window;
+function pickVoice(){try{const v=speechSynthesis.getVoices();voice=v.find(x=>/en-GB/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}catch(e){}}
 if(canSpeak){pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}}
-function speak(t,rate){if(!canSpeak)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';if(voice)u.voice=voice;u.rate=rate||0.95;speechSynthesis.speak(u)}catch(e){}}
+function speak(t,rate){if(!canSpeak||!t)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';if(voice)u.voice=voice;u.rate=rate||0.95;speechSynthesis.speak(u)}catch(e){}}
 
 /* ---------- top & tabs ---------- */
 function renderStats(){
   refreshHearts();
-  const st=liveStreak(), today=S.last===ymd();
+  const st=liveStreak(),today=S.last===ymd();
   $('#stats').innerHTML=
    `<span class="stat ${today?'fire':'off'}" title="Racha de días">${I.fire}${st}</span>`+
    `<span class="stat xp" title="XP total">${I.bolt}${S.xp}</span>`+
    `<span class="stat hp" title="Vidas${S.hearts<MAXH?' · siguiente en '+nextHeartIn():''}">${I.heart}${S.hearts}</span>`;
 }
-let tab='ruta';
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render();scrollTo(0,0)});
 function render(){
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===tab));
   renderStats();
   $('#view').innerHTML=tab==='ruta'?viewPath():tab==='repaso'?viewReview():viewProgress();
 }
-function ring(v,max,size){
+function ring(v,max){
   const r=26,c=2*Math.PI*r,p=Math.min(1,v/max);
   return `<svg class="ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--sunk)" stroke-width="8"/><circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--warm)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${c*p} ${c}" transform="rotate(-90 32 32)"/><text x="32" y="37" text-anchor="middle" font-size="15" font-weight="800" fill="var(--ink)" font-family="Figtree,sans-serif">${Math.round(p*100)}%</text></svg>`;
 }
+const seenCount=u=>UNITS[u].items.filter((_,i)=>S.seen[u+'-'+i]).length;
 
 /* ---------- views ---------- */
 function viewPath(){
   const td=S.days[ymd()]||0;
-  const done=S.prog.reduce((a,b)=>a+Math.min(3,b),0);
-  let h=`<div class="goal">${ring(td,S.goal)}<div><h3>${td>=S.goal?'Meta diaria cumplida':'Meta de hoy: '+S.goal+' XP'}</h3><p>${td} XP hoy · ${done} de ${UNITS.length*3} lecciones hacia el B1</p></div></div>`;
-  if(S.hearts===0) h+=`<div class="card"><h2>Te has quedado sin vidas</h2><p>Recuperas una cada 20 minutos (siguiente en ${nextHeartIn()}). Si completas un repaso, ganas una al momento.</p><button class="btn" data-go-tab="repaso">Ir a repaso</button></div>`;
+  const done=S.prog.reduce((a,b)=>a+Math.min(NL,b),0);
+  let h=`<div class="goal">${ring(td,S.goal)}<div><h3>${td>=S.goal?'Meta diaria cumplida':'Meta de hoy: '+S.goal+' XP'}</h3><p>${td} XP hoy · ${done} de ${UNITS.length*NL} lecciones hacia el B2</p></div></div>`;
+  if(S.hearts===0)h+=`<div class="card"><h2>Te has quedado sin vidas</h2><p>Recuperas una cada 20 minutos (siguiente en ${nextHeartIn()}). Si completas un repaso, ganas una al momento.</p><button class="btn" data-go-tab="repaso">Ir a repaso</button></div>`;
   UNITS.forEach((U,u)=>{
-    const open=unitOpen(u),p=S.prog[u],complete=p>=3;
-    h+=`<section class="unit ${open?'':'locked'} ${complete?'complete':''}"><div class="unit-head"><span class="eyebrow">Unidad ${u+1} · ${Math.min(p,3)}/3</span><h2>${U.title}</h2><p>${U.can}</p></div><ol class="track">`;
-    LESSONS.forEach((L,n)=>{
+    const open=unitOpen(u),p=S.prog[u],complete=p>=NL;
+    h+=`<section class="unit ${open?'':'locked'} ${complete?'complete':''}"><div class="unit-head"><span class="eyebrow">Unidad ${u+1} · ${Math.min(p,NL)}/${NL} · ${seenCount(u)}/${U.items.length} ejercicios vistos</span><h2>${U.title}</h2><p>${U.can}</p>
+      <details class="theory"><summary>Ver teoría</summary><div>${U.key}</div></details></div><ol class="track">`;
+    LESSONS.forEach((Ls,n)=>{
       const state=!open?'locked':n<p?'done':n===p?'current':'locked';
-      const icon=state==='done'?I.check:state==='current'?I.star:I.lock;
+      const icon=state==='done'?I.check:state==='current'?(Ls.exam?I.cap:I.star):(Ls.exam?I.cap:I.lock);
       const btn=state==='locked'?'':`<button class="mini ${state==='current'?'go':''}" data-start="${u},${n}" ${S.hearts===0?'disabled':''}>${state==='current'?'Empezar':'Repetir'}</button>`;
-      h+=`<li class="stop ${state}"><span class="node">${icon}</span><div class="stop-txt"><strong>${L.name}</strong><span>${L.k} ejercicios${n===2?' · incluye escritura':''}</span></div>${btn}</li>`;
+      h+=`<li class="stop ${state} ${Ls.exam?'exam':''}"><span class="node">${icon}</span><div class="stop-txt"><strong>${Ls.name}</strong><span>${Ls.desc}</span></div>${btn}</li>`;
     });
+    if(open&&p>0)h+=`<li class="stop free"><span class="node">${I.shuffle}</span><div class="stop-txt"><strong>Práctica libre</strong><span>10 ejercicios al azar de esta unidad, sin límite</span></div><button class="mini" data-practice="${u}" ${S.hearts===0?'disabled':''}>Practicar</button></li>`;
     h+=`</ol></section>`;
   });
-  h+=`<div class="finish">${I.flag}<span>Al terminar las 8 unidades habrás repasado la gramática clave del nivel B1 (MCER).</span></div>`;
+  h+=`<div class="finish">${I.flag}<span>Al terminar las ${UNITS.length} unidades habrás trabajado la gramática y el vocabulario clave del B2, con ejercicios del tipo que aparecen en el First (FCE) y en la EOI.</span></div>`;
   return h;
 }
 function viewReview(){
   const n=S.mist.length;
   let h=`<div class="card"><h2>Tus errores</h2><p>${n?`Tienes ${n} ejercicio${n>1?'s':''} pendiente${n>1?'s':''}. Al acertarlos desaparecen de esta lista.`:'No tienes errores pendientes. Una práctica mixta mantiene fresco lo aprendido.'} El repaso no gasta vidas y te da una al terminar.</p>
-  <button class="btn" data-review="${n?'mist':'mix'}">${n?'Repasar errores':'Práctica mixta'}</button></div>`;
+  <div class="btn-col"><button class="btn" data-review="${n?'mist':'mix'}">${n?'Repasar errores':'Práctica mixta'}</button>${n?'<button class="btn ghost" data-review="mix">Práctica mixta</button>':''}</div></div>`;
   h+=`<div class="card"><h2>Chuleta de gramática</h2><p>Lo esencial de cada unidad.</p>`;
-  UNITS.forEach((U,u)=>{h+=`<details class="rule" ${unitOpen(u)?'':''}><summary>${u+1}. ${U.title}</summary><div>${U.key}</div></details>`});
+  UNITS.forEach((U,u)=>{h+=`<details class="rule"><summary>${u+1}. ${U.title}</summary><div>${U.key}</div></details>`});
   return h+`</div>`;
 }
-function viewProgress(){
-  const done=S.prog.reduce((a,b)=>a+Math.min(3,b),0),tot=UNITS.length*3;
-  const units=S.prog.filter(p=>p>=3).length;
-  let bars='',max=S.goal;
-  const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d)}
-  days.forEach(d=>max=Math.max(max,S.days[ymd(d)]||0));
-  const wd=['D','L','M','X','J','V','S'];
-  days.forEach((d,i)=>{const v=S.days[ymd(d)]||0;bars+=`<div class="bar ${v>=S.goal?'met':''} ${i===6?'today':''}"><span>${v}</span><i style="height:${Math.max(3,v/max*100)}%"></i><span>${wd[d.getDay()]}</span></div>`});
-  return `<div class="kpis">
-   <div class="kpi" style="color:var(--warm)">${I.fire}<div><b style="color:var(--ink)">${liveStreak()}</b><span>días de racha</span></div></div>
-   <div class="kpi" style="color:var(--accent)">${I.bolt}<div><b style="color:var(--ink)">${S.xp}</b><span>XP total</span></div></div>
-   <div class="kpi" style="color:var(--warm)">${I.star}<div><b style="color:var(--ink)">${S.best}</b><span>mejor racha</span></div></div>
-   <div class="kpi" style="color:var(--good)">${I.check}<div><b style="color:var(--ink)">${units}/${UNITS.length}</b><span>unidades</span></div></div></div>
-  <div class="card"><h2>Camino al B1</h2><div class="meter"><i style="width:${done/tot*100}%"></i></div><p>${done} de ${tot} lecciones completadas (${Math.round(done/tot*100)}%).</p></div>
-  <div class="card"><h2>Últimos 7 días</h2><p>XP por día. En naranja, los días que cumpliste la meta.</p><div class="bars">${bars}</div></div>
-  ${accountCard()}
-  <div class="card"><h2>Ajustes</h2>
-   <div class="row"><label for="goalSel">Meta diaria</label><select id="goalSel">${[20,30,50,80].map(g=>`<option value="${g}" ${g===S.goal?'selected':''}>${g} XP</option>`).join('')}</select></div>
-   <div class="row"><span>Ya tengo base: desbloquear todas las unidades</span><button class="mini" data-act="unlock">${S.unlockAll?'Activado':'Activar'}</button></div>
-   <div class="row"><span>Empezar de cero</span><button class="mini" data-act="reset">Borrar progreso</button></div>
-  </div>`;
-}
-
 function accountCard(){
   if(!cloudOn())return '';
   if(user)return `<div class="card"><h2>Tu cuenta</h2><p>Conectado como <b>${esc(user.email||'')}</b>. Tu progreso se sincroniza entre todos tus dispositivos.</p><p class="sync ${syncErr?'err':''}">${esc(syncMsg)}</p><button class="btn ghost" data-act="logout">Cerrar sesión</button></div>`;
@@ -538,6 +943,32 @@ function accountCard(){
    <div class="auth-btns"><button class="btn" type="submit" data-mode="in">Entrar</button><button class="btn ghost" type="submit" data-mode="up">Crear cuenta</button></div>
   </form></div>`;
 }
+function viewProgress(){
+  const done=S.prog.reduce((a,b)=>a+Math.min(NL,b),0),tot=UNITS.length*NL;
+  const units=S.prog.filter(p=>p>=NL).length;
+  const seen=Object.keys(S.seen).filter(k=>{const[u,i]=k.split('-').map(Number);return UNITS[u]&&UNITS[u].items[i]}).length;
+  let bars='',max=S.goal;
+  const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d)}
+  days.forEach(d=>max=Math.max(max,S.days[ymd(d)]||0));
+  const wd=['D','L','M','X','J','V','S'];
+  days.forEach((d,i)=>{const v=S.days[ymd(d)]||0;bars+=`<div class="bar ${v>=S.goal?'met':''} ${i===6?'today':''}"><span>${v}</span><i style="height:${Math.max(3,v/max*100)}%"></i><span>${wd[d.getDay()]}</span></div>`});
+  return `<div class="kpis">
+   <div class="kpi" style="color:var(--warm)">${I.fire}<div><b style="color:var(--ink)">${liveStreak()}</b><span>días de racha</span></div></div>
+   <div class="kpi" style="color:var(--accent)">${I.bolt}<div><b style="color:var(--ink)">${S.xp}</b><span>XP total</span></div></div>
+   <div class="kpi" style="color:var(--warm)">${I.star}<div><b style="color:var(--ink)">${S.best}</b><span>mejor racha</span></div></div>
+   <div class="kpi" style="color:var(--good)">${I.check}<div><b style="color:var(--ink)">${units}/${UNITS.length}</b><span>unidades</span></div></div></div>
+  <div class="card"><h2>Camino al B2</h2>
+   <div class="meter"><i style="width:${done/tot*100}%"></i></div><p>${done} de ${tot} lecciones completadas (${Math.round(done/tot*100)}%).</p>
+   <div class="meter"><i style="width:${seen/TOTAL_ITEMS*100}%;background:var(--accent)"></i></div><p>${seen} de ${TOTAL_ITEMS} ejercicios distintos practicados.</p></div>
+  <div class="card"><h2>Últimos 7 días</h2><p>XP por día. En naranja, los días que cumpliste la meta.</p><div class="bars">${bars}</div></div>
+  ${accountCard()}
+  <div class="card"><h2>Ajustes</h2>
+   <div class="row"><label for="goalSel">Meta diaria</label><select id="goalSel">${[20,30,50,80,120].map(g=>`<option value="${g}" ${g===S.goal?'selected':''}>${g} XP</option>`).join('')}</select></div>
+   <div class="row"><span>Desbloquear todas las unidades</span><button class="mini" data-act="unlock">${S.unlockAll?'Activado':'Activar'}</button></div>
+   <div class="row"><span>Empezar de cero</span><button class="mini" data-act="reset">Borrar progreso</button></div>
+  </div>`;
+}
+
 document.addEventListener('submit',async e=>{
   if(e.target.id!=='authForm')return;
   e.preventDefault();
@@ -546,15 +977,17 @@ document.addEventListener('submit',async e=>{
   const msg=t=>{authMsg=t;const el=$('#authMsg');if(el){el.textContent=t;el.className='sync'+(t&&!/Revisa|Entrando|Creando/.test(t)?' err':'')}};
   if(!email||password.length<6)return msg('Escribe tu email y una contraseña de al menos 6 caracteres.');
   msg(mode==='up'?'Creando la cuenta…':'Entrando…');
-  const r=mode==='up'?await sb.auth.signUp({email,password}):await sb.auth.signInWithPassword({email,password});
-  if(r.error)return msg(authError(r.error.message));
-  if(mode==='up'&&!r.data.session)return msg('Cuenta creada. Revisa tu correo para confirmarla y después pulsa Entrar.');
-  authMsg='';
+  try{
+    const r=mode==='up'?await sb.auth.signUp({email,password}):await sb.auth.signInWithPassword({email,password});
+    if(r.error)return msg(authError(r.error.message));
+    if(mode==='up'&&!r.data.session)return msg('Cuenta creada. Revisa tu correo para confirmarla y después pulsa Entrar.');
+    authMsg='';
+  }catch(err){msg('No se pudo conectar con el servidor. Revisa tu conexión.')}
 });
-
 document.addEventListener('click',e=>{
-  const t=e.target.closest('[data-start],[data-review],[data-act],[data-go-tab]');if(!t)return;
+  const t=e.target.closest('[data-start],[data-review],[data-practice],[data-act],[data-go-tab]');if(!t)return;
   if(t.dataset.start){const[u,n]=t.dataset.start.split(',').map(Number);startLesson(u,n)}
+  else if(t.dataset.practice)startPractice(+t.dataset.practice);
   else if(t.dataset.review)startReview(t.dataset.review);
   else if(t.dataset.goTab){tab=t.dataset.goTab;render()}
   else if(t.dataset.act==='logout'){sb.auth.signOut();user=null;syncMsg='';render()}
@@ -562,46 +995,90 @@ document.addEventListener('click',e=>{
   else if(t.dataset.act==='reset')confirmDlg('¿Borrar todo tu progreso?','Perderás XP, racha y lecciones completadas. No se puede deshacer.','Borrar',()=>{S=DEF();save();render()});
 });
 document.addEventListener('change',e=>{if(e.target.id==='goalSel'){S.goal=+e.target.value;save();render()}});
-
 function confirmDlg(title,text,ok,fn,cancel){
   const d=$('#dlg');d.innerHTML=`<div class="box" role="dialog" aria-modal="true"><h3>${title}</h3><p>${text}</p><button class="btn bad" id="dOk">${ok}</button><button class="btn ghost" id="dNo">${cancel||'Cancelar'}</button></div>`;
   d.hidden=false;$('#dOk').onclick=()=>{d.hidden=true;fn()};$('#dNo').onclick=()=>d.hidden=true;
 }
 
-/* ---------- lesson engine ---------- */
-let L=null;
+/* ---------- selección de ejercicios ---------- */
+const EXAM_T=['kwt','wf','open','err','write'], EASY_T=['gap','mc','match','order'];
+const CAP={match:1,listen:2,write:2};
+function modeFor(d,typedChance){
+  if(d.t==='gap')return Math.random()<typedChance?'typed':'opt';
+  if(d.t==='listen')return canSpeak&&Math.random()<typedChance*.8?'typed':'tiles';
+  return '';
+}
+// Prioriza los ejercicios que menos has visto, con algo de azar
+function pick(pool,k,opts){
+  opts=opts||{};
+  const cand=pool.map(r=>{const d=UNITS[r.u].items[r.i];let sc=(S.seen[r.u+'-'+r.i]||0)+Math.random()*1.6;
+    if(opts.exam&&EXAM_T.includes(d.t))sc-=1.4;
+    if(opts.easy&&EASY_T.includes(d.t))sc-=.8;
+    if(opts.easy&&['kwt','err'].includes(d.t))sc+=1;
+    return{r,d,sc}}).sort((a,b)=>a.sc-b.sc);
+  const out=[],cnt={};
+  for(const c of cand){if(out.length>=k)break;const t=c.d.t;if(CAP[t]&&(cnt[t]||0)>=CAP[t])continue;cnt[t]=(cnt[t]||0)+1;out.push(c)}
+  for(const c of cand){if(out.length>=k)break;if(!out.includes(c))out.push(c)}
+  return shuffle(out).map(c=>({u:c.r.u,i:c.r.i,mode:modeFor(c.d,opts.typed||0)}));
+}
+const unitPool=u=>UNITS[u].items.map((_,i)=>({u,i}));
 function startLesson(u,n){
   refreshHearts();if(S.hearts===0){render();return}
-  const pool=shuffle(UNITS[u].items.map((_,i)=>({u,i})));
-  let pick=pool.slice(0,LESSONS[n].k);
-  if(n===2&&!pick.some(r=>UNITS[r.u].items[r.i].t==='write')){const w=pool.find(r=>UNITS[r.u].items[r.i].t==='write');if(w)pick[0]=w}
-  begin(pick,{mode:'unit',u,n});
+  const Ls=LESSONS[n];
+  begin(pick(unitPool(u),Ls.k,{exam:Ls.exam,easy:n===0,typed:Ls.typed?(Ls.exam?.75:.6):0}),{mode:'unit',u,n});
+}
+function startPractice(u){
+  refreshHearts();if(S.hearts===0){render();return}
+  begin(pick(unitPool(u),10,{typed:.5}),{mode:'practice',u});
 }
 function startReview(kind){
-  let pick;
-  if(kind==='mist')pick=shuffle(S.mist).slice(0,10).map(id=>{const[u,i]=id.split('-').map(Number);return{u,i}}).filter(r=>UNITS[r.u]&&UNITS[r.u].items[r.i]);
-  else{const us=UNITS.map((_,u)=>u).filter(u=>S.prog[u]>0||u===0);pick=shuffle(us.flatMap(u=>UNITS[u].items.map((_,i)=>({u,i})))).slice(0,8)}
-  if(!pick.length)return;
-  begin(pick,{mode:'review'});
+  let q;
+  if(kind==='mist'){
+    q=shuffle(S.mist).slice(0,10).map(id=>{const[u,i]=id.split('-').map(Number);return{u,i}}).filter(r=>UNITS[r.u]&&UNITS[r.u].items[r.i]).map(r=>({u:r.u,i:r.i,mode:modeFor(UNITS[r.u].items[r.i],.3)}));
+  }else{
+    const us=UNITS.map((_,u)=>u).filter(u=>unitOpen(u)&&(S.prog[u]>0||u===0));
+    q=pick(us.flatMap(unitPool),10,{typed:.4});
+  }
+  if(!q.length)return;
+  begin(q,{mode:'review'});
 }
+
+/* ---------- lesson engine ---------- */
 function begin(items,meta){
   L=Object.assign({queue:items,pos:0,total:items.length,done:0,xp:0,miss:0,missed:new Set(),phase:'ask'},meta);
   $('#lesson').hidden=false;document.body.style.overflow='hidden';
   showEx();
 }
 function cur(){const r=L.queue[L.pos];return{r,d:UNITS[r.u].items[r.i],id:r.u+'-'+r.i}}
-function setFoot(state,html){const f=$('#foot');f.className='l-foot'+(state?' '+state:'');$('#fb').innerHTML=html||''}
+function setFoot(state,html){$('#foot').className='l-foot'+(state?' '+state:'');$('#fb').innerHTML=html||''}
 function lessonHearts(){$('#lhp').innerHTML=L.mode==='review'?'':I.heart+S.hearts}
+function kindLabel(d,mode){
+  return {gap:mode==='typed'?'Escribe lo que falta':'Completa la frase',mc:'Elige la respuesta',order:'Traduce esta frase',write:'Escribe en inglés',
+    listen:mode==='typed'?'Dictado: escribe lo que oyes':'Ordena lo que oyes',match:'Une las parejas',open:'Escribe una sola palabra',
+    wf:'Forma la palabra correcta',kwt:'Transforma la frase',err:'Toca la palabra incorrecta'}[d.t];
+}
+function inl(s,ans,wide){
+  const w=(wide?Math.max(16,ans.length+5):Math.max(6,ans.length+3))+(Math.random()*3|0);
+  return esc(s).replace('___',`<input class="inl" id="inp" style="width:${w}ch" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Tu respuesta">`);
+}
+function bindInput(){
+  const inp=$('#inp'),go=$('#go');
+  inp.oninput=()=>go.disabled=!inp.value.trim();
+  inp.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!go.disabled)go.click()}};
+  setTimeout(()=>{try{inp.focus({preventScroll:true})}catch(e){}},60);
+}
+function speakBtns(en){return `<div class="speak"><button class="spk" id="spk" aria-label="Escuchar">${I.speaker}</button><button class="spk slow" id="spkS" aria-label="Escuchar despacio">${I.turtle}</button></div>`}
+function bindSpeak(en){$('#spk').onclick=()=>speak(en);$('#spkS').onclick=()=>speak(en,.6);setTimeout(()=>speak(en),250)}
 
 function showEx(){
-  const{d,id}=cur();
+  const{d,id,r}=cur();
   $('#bar').style.width=(L.done/L.total*100)+'%';lessonHearts();
   L.phase='ask';L.sel=null;setFoot('');
   const go=$('#go');go.textContent='Comprobar';go.disabled=true;go.className='btn';go.hidden=false;
   const again=L.missed.has(id);
-  let h=`<div class="kind ${again?'again':''}">${again?'Otra vez · ':''}${KINDS[d.t]}</div>`;
+  let h=`<div class="kind ${again?'again':''}">${again?'Otra vez · ':''}${kindLabel(d,r.mode)}</div>`;
   const ex=$('#ex');
-  if(d.t==='gap'||d.t==='mc'){
+  if((d.t==='gap'&&r.mode!=='typed')||d.t==='mc'){
     L.opts=shuffle(d.o);
     h+=d.t==='gap'?`<div class="sent">${esc(d.s).replace('___','<span class="slot" id="slot">&nbsp;</span>')}</div>`:`<h2 class="q">${esc(d.q)}</h2>`;
     h+=`<div class="opts">${L.opts.map((o,k)=>`<button class="opt" data-k="${k}" aria-pressed="false">${esc(o)}</button>`).join('')}</div>`;
@@ -610,24 +1087,41 @@ function showEx(){
       ex.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');
       L.sel=L.opts[+b.dataset.k];if($('#slot'))$('#slot').textContent=L.sel;go.disabled=false});
   }
+  else if(d.t==='gap'||d.t==='open'||d.t==='wf'){
+    h+=`<div class="sent">${inl(d.s,d.t==='gap'?d.o[0]:d.ans[0])}</div>`;
+    if(d.t==='wf')h+=`<div class="stem-row"><span>Palabra base</span><b class="chip">${esc(d.stem)}</b></div>`;
+    if(d.t==='open')h+=`<p class="note">Una sola palabra en cada hueco.</p>`;
+    ex.innerHTML=h;bindInput();
+  }
+  else if(d.t==='kwt'){
+    h+=`<div class="es">${esc(d.s1)}</div><div class="stem-row"><span>Palabra clave (no la cambies)</span><b class="chip">${esc(d.key)}</b></div><div class="sent">${inl(d.s2,d.ans[0],true)}</div><p class="note">Escribe entre 2 y 5 palabras, incluida la palabra clave.</p>`;
+    ex.innerHTML=h;bindInput();
+  }
+  else if(d.t==='err'){
+    const toks=d.s.split(' ');L.bad=toks.map((t,k)=>t.includes('*')?k:-1).filter(k=>k>=0);
+    h+=`<div class="toks">${toks.map((t,k)=>`<button class="tok" data-t="${k}" aria-pressed="false">${esc(t.replace(/\*/g,''))}</button>`).join('')}</div><p class="note" style="margin-top:18px">Hay una palabra que sobra o está mal. Tócala.</p>`;
+    ex.innerHTML=h;
+    ex.querySelectorAll('.tok').forEach(b=>b.onclick=()=>{if(L.phase!=='ask')return;
+      ex.querySelectorAll('.tok').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');L.sel=+b.dataset.t;go.disabled=false});
+  }
+  else if(d.t==='listen'&&r.mode==='typed'){
+    h+=speakBtns()+`<textarea id="inp" placeholder="Escribe en inglés lo que oyes…" autocomplete="off" autocapitalize="sentences" spellcheck="false"></textarea>`;
+    ex.innerHTML=h;bindSpeak(d.en);bindInput();
+  }
   else if(d.t==='order'||d.t==='listen'){
     const audio=d.t==='listen'&&canSpeak;
     L.bank=shuffle(d.en.split(' ').concat(d.extra||[]));L.ans=[];
-    h+=audio?`<div class="speak"><button class="spk" id="spk" aria-label="Escuchar">${I.speaker}</button><button class="spk slow" id="spkS" aria-label="Escuchar despacio">${I.turtle}</button></div>`
-            :`<div class="es">${esc(d.es)}</div>`;
+    h+=audio?speakBtns():`<div class="es">${esc(d.es)}</div>`;
     h+=`<div class="answer-line" id="aline"></div><div class="bank" id="bank"></div>`;
-    ex.innerHTML=h;
-    if(audio){$('#spk').onclick=()=>speak(d.en);$('#spkS').onclick=()=>speak(d.en,.6);setTimeout(()=>speak(d.en),250)}
+    ex.innerHTML=h;if(audio)bindSpeak(d.en);
     drawTiles();
   }
   else if(d.t==='write'){
     h+=`<div class="es">${esc(d.es)}</div><textarea id="inp" placeholder="Escribe en inglés…" autocomplete="off" autocapitalize="sentences" spellcheck="false"></textarea>`;
-    ex.innerHTML=h;const inp=$('#inp');inp.oninput=()=>go.disabled=!inp.value.trim();
-    inp.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!go.disabled)go.click()}};
-    setTimeout(()=>inp.focus(),50);
+    ex.innerHTML=h;bindInput();
   }
   else if(d.t==='match'){
-    const idx=d.pairs.map((_,k)=>k);L.m={l:shuffle(idx),r:shuffle(idx),sl:null,sr:null,ok:new Set(),err:0};
+    const idx=d.pairs.map((_,k)=>k);L.m={l:shuffle(idx),r:shuffle(idx),sl:null,sr:null,ok:new Set()};
     h+=`<div class="match"><div class="col" id="ml"></div><div class="col" id="mr"></div></div>`;
     ex.innerHTML=h;go.hidden=true;drawMatch();
   }
@@ -652,43 +1146,55 @@ function drawMatch(){
 function pickMatch(){
   const m=L.m,{d}=cur();
   if(m.sl===null||m.sr===null){drawMatch();return}
-  if(m.sl===m.sr){m.ok.add(m.sl);m.sl=m.sr=null;drawMatch();
-    if(m.ok.size===d.pairs.length)resolve(true,'');}
-  else{const a=m.sl,b=m.sr;m.err++;m.sl=m.sr=null;drawMatch();
+  if(m.sl===m.sr){m.ok.add(m.sl);m.sl=m.sr=null;drawMatch();if(m.ok.size===d.pairs.length)resolve(true,'')}
+  else{const a=m.sl,b=m.sr;m.sl=m.sr=null;drawMatch();
     const l=document.querySelector(`[data-l="${a}"]`),r=document.querySelector(`[data-r="${b}"]`);
-    [l,r].forEach(x=>x&&x.classList.add('no'));setTimeout(()=>[l,r].forEach(x=>x&&x.classList.remove('no')),450);}
+    [l,r].forEach(x=>x&&x.classList.add('no'));setTimeout(()=>[l,r].forEach(x=>x&&x.classList.remove('no')),450)}
 }
 function check(){
-  const{d}=cur();let ok=false,ans='',typo=false;
-  if(d.t==='gap'){ok=L.sel===d.o[0];ans=d.s.replace('___',d.o[0])}
-  else if(d.t==='mc'){ok=L.sel===d.o[0];ans=d.o[0]}
-  else if(d.t==='order'||d.t==='listen'){ok=norm(L.ans.map(k=>L.bank[k]).join(' '))===norm(d.en);ans=d.en+'.'}
-  else if(d.t==='write'){
-    const v=norm($('#inp').value);ans=d.ans[0].charAt(0).toUpperCase()+d.ans[0].slice(1)+'.';
-    for(const a of d.ans){const n=norm(a);if(v===n){ok=true;break}if(lev(v,n)<=Math.max(1,Math.floor(n.length/20))){ok=true;typo=true;ans=a.charAt(0).toUpperCase()+a.slice(1)+'.'}}
+  const{d,r}=cur();let res={ok:false},ans='';
+  const v=()=>($('#inp')||{}).value||'';
+  switch(d.t){
+    case 'gap': if(r.mode==='typed')res=anyMatch(v(),[d.o[0]],true);else res={ok:L.sel===d.o[0]};ans=fill(d.s,d.o[0]);break;
+    case 'mc': res={ok:L.sel===d.o[0]};ans=d.o[0];break;
+    case 'open': res=anyMatch(v(),d.ans,false);ans=fill(d.s,res.ok?res.a:d.ans[0]);break;
+    case 'wf': res=anyMatch(v(),d.ans,true);ans=fill(d.s,d.ans[0]);break;
+    case 'kwt': res=anyMatch(v(),d.ans.concat(d.ans.map(a=>fill(d.s2,a))),true);ans=fill(d.s2,res.ok&&!res.typo&&d.ans.includes(res.a)?res.a:d.ans[0]);break;
+    case 'err': res={ok:L.bad.includes(L.sel)};ans=d.fix;
+      document.querySelectorAll('.tok').forEach((b,k)=>{if(L.bad.includes(k))b.classList.add('right');else if(k===L.sel)b.classList.add('wrong')});break;
+    case 'write': res=anyMatch(v(),d.ans,true);ans=(res.ok&&!res.typo?res.a:d.ans[0])+'.';break;
+    case 'listen': if(r.mode==='typed'){res=anyMatch(v(),[d.en],true);ans=d.en+'.';break}
+    /* fall through */
+    case 'order': res={ok:norm(L.ans.map(k=>L.bank[k]).join(' '))===norm(d.en)};ans=d.en+'.';break;
   }
-  resolve(ok,ans,typo);
+  resolve(res.ok,ans,res.typo);
+}
+function englishOf(d){
+  return {gap:fill(d.s||'',d.o?d.o[0]:''),open:d.ans&&d.s?fill(d.s,d.ans[0]):'',wf:d.ans&&d.s?fill(d.s,d.ans[0]):'',kwt:d.s2?fill(d.s2,d.ans[0]):'',err:d.fix,write:d.ans?d.ans[0]:'',order:d.en,listen:d.en,mc:'',match:''}[d.t]||'';
 }
 function resolve(ok,ans,typo){
   const{d,id,r}=cur();L.phase='fb';
   const first=!L.missed.has(id);
-  const en=d.t==='gap'?d.s.replace('___',d.o[0]):d.t==='mc'?(/[áéíóúñ¿]/i.test(d.o[0])?'':d.o[0]):d.t==='write'?ans:d.t==='match'?'':d.en;
+  if(first){S.seen[id]=(S.seen[id]||0)+1}
+  const en=d.t==='mc'?(/[áéíóúñ¿¡]/i.test(d.o[0])?'':d.o[0]):d.t==='open'||d.t==='write'||d.t==='kwt'?ans.replace(/\.$/,''):englishOf(d);
   const spk=en&&canSpeak?`<button aria-label="Escuchar" data-say="${esc(en)}">${I.speaker}</button>`:'';
   if(ok){
     L.done++;L.xp+=first?10:5;
     if(L.mode==='review'||!first)S.mist=S.mist.filter(x=>x!==id);
-    const praise=['¡Muy bien!','¡Perfecto!','¡Correcto!','¡Genial!','¡Así se hace!'][Math.random()*5|0];
-    setFoot('good',`<h3>${I.check}${praise}</h3>${typo?`<div class="ans">Ojo con la ortografía: ${esc(ans)}${spk}</div>`:(spk&&d.t!=='mc'?`<div class="ans">${esc(en)}${spk}</div>`:'')}`);
+    const praise=['¡Muy bien!','¡Perfecto!','¡Correcto!','¡Genial!','¡Así se hace!','¡Impecable!'][Math.random()*6|0];
+    const show=d.t!=='mc'&&d.t!=='match';
+    setFoot('good',`<h3>${I.check}${praise}</h3>${typo?`<div class="ans">Ojo con la ortografía: ${esc(ans)}${spk}</div>`:(show&&en?`<div class="ans">${esc(ans)}${spk}</div>`:'')}`);
   }else{
-    L.miss++;L.missed.add(id);L.queue.push(r);
-    if(!S.mist.includes(id))S.mist.push(id);if(S.mist.length>40)S.mist.shift();
+    L.miss++;L.missed.add(id);
+    L.queue.push(Object.assign({},r));
+    if(!S.mist.includes(id))S.mist.push(id);if(S.mist.length>60)S.mist.shift();
     if(L.mode!=='review'){loseHeart();lessonHearts()}
     setFoot('bad',`<h3>${I.x}Respuesta correcta:</h3><div class="ans">${esc(ans)}${spk}</div>${d.tip?`<div class="tip">${esc(d.tip)}</div>`:''}`);
   }
   save();
   $('#bar').style.width=(L.done/L.total*100)+'%';
   const go=$('#go');go.hidden=false;go.disabled=false;go.textContent='Continuar';go.className='btn '+(ok?'good':'bad');go.focus({preventScroll:true});
-  const sb=document.querySelector('[data-say]');if(sb)sb.onclick=()=>speak(sb.dataset.say);
+  const sb2=document.querySelector('[data-say]');if(sb2)sb2.onclick=()=>speak(sb2.dataset.say);
 }
 $('#go').onclick=()=>{
   if(L.phase==='ask')return check();
@@ -699,7 +1205,7 @@ $('#go').onclick=()=>{
   }else if(L.phase==='end')closeLesson();
 };
 document.addEventListener('keydown',e=>{
-  if($('#lesson').hidden||e.key!=='Enter'||e.target.tagName==='TEXTAREA'||e.target.tagName==='BUTTON')return;
+  if($('#lesson').hidden||e.key!=='Enter'||['TEXTAREA','BUTTON','INPUT'].includes(e.target.tagName))return;
   const go=$('#go');if(!go.disabled&&!go.hidden)go.click();
 });
 function endLesson(win){
@@ -707,20 +1213,22 @@ function endLesson(win){
   const go=$('#go');go.className='btn';go.textContent='Continuar';go.hidden=false;go.disabled=false;
   if(!win){
     $('#ex').innerHTML=`<div class="result"><div class="badge sad">${I.heart}</div><h1>Sin vidas</h1><p>Recuperas una cada 20 minutos. Completa un repaso para ganar una ya.</p></div>`;
-    return;
+    save();return;
   }
   const perfect=L.miss===0;if(perfect)L.xp+=5;
+  const isExam=L.mode==='unit'&&LESSONS[L.n].exam;if(isExam)L.xp+=10;
   const today=ymd();
   if(S.last!==today){S.streak=S.last===yest()?S.streak+1:1;S.last=today}
   S.best=Math.max(S.best,S.streak);
   S.xp+=L.xp;S.days[today]=(S.days[today]||0)+L.xp;
   let msg='Lección completada.';
-  if(L.mode==='unit'&&L.n===S.prog[L.u]){S.prog[L.u]++;msg=S.prog[L.u]===3?(L.u<UNITS.length-1?`¡Unidad ${L.u+1} terminada! Se abre la unidad ${L.u+2}.`:'¡Has completado toda la ruta B1!'):'Siguiente lección desbloqueada.'}
+  if(L.mode==='unit'&&L.n===S.prog[L.u]){S.prog[L.u]++;msg=S.prog[L.u]===NL?(L.u<UNITS.length-1?`¡Unidad ${L.u+1} superada! Se abre la unidad ${L.u+2}.`:'¡Has completado toda la ruta B2!'):'Siguiente lección desbloqueada.'}
+  if(L.mode==='practice')msg='Práctica completada. Puedes repetirla cuantas veces quieras: los ejercicios cambian.';
   if(L.mode==='review'){S.hearts=Math.min(MAXH,S.hearts+1);msg='Repaso completado. +1 vida.'}
   save();
   const acc=Math.round(L.total/(L.total+L.miss)*100);
   $('#bar').style.width='100%';
-  $('#ex').innerHTML=`<div class="result"><div class="badge">${I.star}</div><h1>${perfect?'¡Lección perfecta!':'¡Lección superada!'}</h1><p>${msg}</p>
+  $('#ex').innerHTML=`<div class="result"><div class="badge">${isExam?I.cap:I.star}</div><h1>${perfect?'¡Lección perfecta!':isExam?'¡Examen superado!':'¡Lección superada!'}</h1><p>${msg}</p>
    <div class="trio"><div><b>+${L.xp}</b><span>XP</span></div><div><b>${acc}%</b><span>Acierto</span></div><div><b>${S.streak}</b><span>Racha</span></div></div></div>`;
 }
 function closeLesson(){try{speechSynthesis.cancel()}catch(e){}$('#lesson').hidden=true;document.body.style.overflow='';L=null;render()}
@@ -732,7 +1240,7 @@ $('#quit').onclick=()=>{
 render();
 initCloud();
 setInterval(()=>{if($('#lesson').hidden)renderStats()},15000);
-</script>
 
+</script>
 </body>
 </html>
